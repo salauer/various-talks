@@ -1,0 +1,419 @@
+---
+title: '"Estimating the effect of prevention interventions"'
+author: "Stephen A Lauer"
+date: "6/19/2017"
+output: slidy_presentation
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+```{r packages, include=FALSE}
+# library(DiagrammeR)
+library(coin)
+library(MASS)
+library(knitr)
+library(mgcv)
+library(dplyr)
+set.seed(1)
+OVERWRITE=TRUE
+```
+
+## Objective
+
+Goal:
+
+- To measure the effect of an intervention on an outcome (e.g. incident HIV, DHF) 
+    - "The difference in the average outcome across communities that would have been observed if all the communities had been allocated the intervention vs. if none of the communities had been allocated the intervention"
+
+Data:
+
+- Intervention measurements
+- Endpoint measurements
+- "Confounders", covariates measured prior to the intervention that may affect the intervention and/or endpoint
+
+<!-- ## Data analysis protocol (Box 2 on p.6) -->
+
+<!-- Investigators need to write out the following components of their experiment: -->
+
+<!-- 1) Study design (data-generating process) -->
+<!-- 2) Data -->
+<!-- 3) Estimand (statistical target parameter) -->
+<!-- 4) Statistical model -->
+<!-- 5) Estimator for the estimand -->
+<!-- 6) Estimator for the variance -->
+<!-- 7) Interpretation of results -->
+
+## Simulation setup
+
+With all the simulations happening in the paper, I had to run one of my own.
+
+$$
+\begin{align}
+Y_{it} &\sim \text{NB}(\lambda_{it}, r) \\
+\log(\lambda_{it}) &\sim \beta_0 + \alpha_i + \gamma_t + f(X_{it}) + \log(\tau)\delta_{it} \\
+\alpha_i &\sim \text{Normal}(0,\sigma^2_\alpha) \\
+\gamma_t &\sim \text{Normal}(0,\sigma^2_\gamma) \\
+X_{it} &\sim \text{Poisson}(\xi) \\
+f(X_{it}) &\sim \text{Normal}(\beta_1\log(X_{it}), \sigma^2_f) \\
+\delta_{i,17} &\sim \text{Bernoulli}(p_i) \\
+p_i &\sim \text{Beta}(X_{i,17}^2/\xi^2, 1)
+\end{align}
+$$
+
+- $Y_{it}$ is the number of cases in province $i$ at time $t$
+- $\alpha_i$ is a random effect for province, $\gamma_t$ is a random effect for time
+- $X_{it}$ is pre-season incidence
+- $\tau$ is the relative risk for the intervention group over the control group ($\delta_{it}$ is a binary indicator for intervention)
+
+## Simulation parameters
+
+$$
+\begin{align}
+\beta_0 &= \log(20) \\
+\sigma_\alpha &= 0.2 \\
+\sigma_\gamma &= 0.35 \\
+\xi &= 7.75 \\
+\beta_1 &= .45 \\
+\sigma_f &= 0.02 \\
+\tau &= {1, 0.7} \\
+r &= 3
+\end{align}
+$$
+
+```{r data-generation, cache=TRUE, message=FALSE, warning=FALSE}
+sims=100
+k=.7
+all_sims <- c()
+new_sims <- c()
+for(i in 1:sims){
+    ## create simulation dataframe
+    sim_dat <- expand.grid(sim=i, tau=k,
+                           loc=as.factor(1:76),
+                           time=as.factor(1:17),
+                           type="re with driver",
+                           intervention=0,
+                           alpha=NA,
+                           gamma=NA,
+                           p=0,
+                           X=NA,
+                           y = NA)
+    ## set alpha and gamma levels and apply them to the dataframe
+    alpha <- rnorm(76, sd = 0.2)
+    gamma <- rnorm(17, sd = 0.35)
+    sim_dat$alpha <- alpha[sim_dat$loc]
+    sim_dat$gamma <- gamma[sim_dat$time]
+    sim_dat$X <- rpois(nrow(sim_dat), 7.75)
+    ## set interventions at time==17
+    sim_dat$p[sim_dat$time==17] <- rbeta(76, (sim_dat$X[sim_dat$time==17]+1)^2/8.75^2, 1)
+    sim_dat$intervention[sim_dat$time==17] <- rbinom(76, 1, sim_dat$p[sim_dat$time==17])
+    
+    ## calculate y based on alpha, gamma, and intervention
+    sim_dat <- sim_dat %>% 
+        mutate(y=rnbinom(nrow(sim_dat),
+                         mu=exp(log(20)+alpha+gamma+
+                                    .45*rnorm(nrow(sim_dat), mean=log(X+.01), sd=0.02)+ 
+                                    log(k)*intervention), size=3))
+    sim_sum <- sim_dat %>% group_by(sim, intervention) %>%
+        summarise(mean=mean(y))
+    # ## find relevant statistics for summary table
+    # sim_dat$treatment_ratio <- sim_sum$mean[sim_sum$intervention==1]/
+    #     sim_sum$mean[sim_sum$intervention==0]
+    # sim_fit <- gam(y~s(loc, bs="re") + s(time, bs="re") + log(X+.01) + as.factor(intervention),
+    #                data=sim_dat, family=nb)
+    # sim_dat$beta0_hat <- exp(sim_fit$coefficients[1])
+    # sim_dat$tau_hat <- exp(sim_fit$coefficients[3])
+    # sim_dat$tau_p <- summary(sim_fit)$p.pv[3]
+    # sim_dat$beta1_hat <- sim_fit$coefficients[2]
+    # sim_dat$beta1_p <- summary(sim_fit)$p.pv[2]
+    ## bind rows to larger dataframe
+    new_sims <- bind_rows(new_sims, sim_dat)
+}
+all_sims <- bind_rows(all_sims, new_sims)
+```
+
+```{r data-generation-no-effect, cache=TRUE, message=FALSE, warning=FALSE, dependson="data-generation"}
+k=1
+new_sims <- c()
+for(i in 1:sims){
+    ## create simulation dataframe
+    sim_dat <- expand.grid(sim=i, tau=k,
+                           loc=as.factor(1:76),
+                           time=as.factor(1:17),
+                           type="re with driver",
+                           intervention=0,
+                           alpha=NA,
+                           gamma=NA,
+                           p=0,
+                           X=NA,
+                           y = NA)
+    ## set alpha and gamma levels and apply them to the dataframe
+    alpha <- rnorm(76, sd = 0.2)
+    gamma <- rnorm(17, sd = 0.35)
+    sim_dat$alpha <- alpha[sim_dat$loc]
+    sim_dat$gamma <- gamma[sim_dat$time]
+    sim_dat$X <- rpois(nrow(sim_dat), 7.75)
+    ## set interventions at time==17
+    sim_dat$p[sim_dat$time==17] <- rbeta(76, (sim_dat$X[sim_dat$time==17]+1)^2/8.75^2, 1)
+    sim_dat$intervention[sim_dat$time==17] <- rbinom(76, 1, sim_dat$p[sim_dat$time==17])
+    
+    ## calculate y based on alpha, gamma, and intervention
+    sim_dat <- sim_dat %>% 
+        mutate(y=rnbinom(nrow(sim_dat),
+                         mu=exp(log(20)+alpha+gamma+
+                                    .45*rnorm(nrow(sim_dat), mean=log(X+.01), sd=0.02)+ 
+                                    log(k)*intervention), size=3))
+    sim_sum <- sim_dat %>% group_by(sim, intervention) %>%
+        summarise(mean=mean(y))
+    # ## find relevant statistics for summary table
+    # sim_dat$treatment_ratio <- sim_sum$mean[sim_sum$intervention==1]/
+    #     sim_sum$mean[sim_sum$intervention==0]
+    # sim_fit <- gam(y~s(loc, bs="re") + s(time, bs="re") + log(X+.01) + as.factor(intervention),
+    #                data=sim_dat, family=nb)
+    # sim_dat$beta0_hat <- exp(sim_fit$coefficients[1])
+    # sim_dat$tau_hat <- exp(sim_fit$coefficients[3])
+    # sim_dat$tau_p <- summary(sim_fit)$p.pv[3]
+    # sim_dat$beta1_hat <- sim_fit$coefficients[2]
+    # sim_dat$beta1_p <- summary(sim_fit)$p.pv[2]
+    ## bind rows to larger dataframe
+    new_sims <- bind_rows(new_sims, sim_dat)
+}
+all_sims <- bind_rows(all_sims, new_sims)
+```
+
+## Comparing results with raw endpoints
+
+```{r endpoints, warning=FALSE, message=FALSE, cache=TRUE, autodep=TRUE}
+effect_sims <- all_sims %>% filter(tau!=1)
+sim_rr_effect <- c()
+sim_p_effect <- c()
+for(i in 1:sims){
+    tmp_sims <- effect_sims %>% filter(sim==i, time==17)
+    sim_rr_effect[i] <- mean(tmp_sims$y[tmp_sims$intervention==1])/mean(tmp_sims$y[tmp_sims$intervention==0])
+    sim_p_effect[i] <- oneway_test(y~as.factor(intervention),
+                            tmp_sims,alternative="greater",
+                            distribution="exact") %>%
+        pvalue()
+}
+```
+
+```{r endpoints-no-effect, warning=FALSE, message=FALSE, cache=TRUE, autodep=TRUE}
+no_effect_sims <- all_sims %>% filter(tau==1)
+sim_rr_no_effect <- c()
+sim_p_no_effect <- c()
+for(i in 1:sims){
+    tmp_sims <- no_effect_sims %>% filter(sim==i, time==17)
+    sim_rr_no_effect[i] <- mean(tmp_sims$y[tmp_sims$intervention==1])/mean(tmp_sims$y[tmp_sims$intervention==0])
+    sim_p_no_effect[i] <- oneway_test(y~as.factor(intervention),
+                                      tmp_sims,alternative="greater",
+                                      distribution="exact") %>%
+        pvalue()
+}
+```
+
+```{r endpoints-summary, warning=FALSE, message=FALSE}
+ratio_w_effect <- mean(sim_rr_effect)
+ratio_w_effect_10 <- quantile(sim_rr_effect, probs=.1)
+ratio_w_effect_90 <- quantile(sim_rr_effect, probs=.9)
+signif_w_effect <- mean(sim_p_effect<.05)
+ratio_wo_effect <- mean(sim_rr_no_effect)
+ratio_wo_effect_10 <- quantile(sim_rr_no_effect, probs=.1)
+ratio_wo_effect_90 <- quantile(sim_rr_no_effect, probs=.9)
+signif_wo_effect <- mean(sim_p_no_effect<.05)
+
+simple_summary <- data_frame(`No Effect` = c(round(ratio_wo_effect,2),
+                                             round(ratio_wo_effect_10,2),
+                                             round(ratio_wo_effect_90,2),
+                                             round(signif_wo_effect,2),
+                                             NA),
+                             `$\\tau$=0.7` = c(round(ratio_w_effect,2),
+                                               round(ratio_w_effect_10,2),
+                                               round(ratio_w_effect_90,2),
+                                               NA,
+                                               round(signif_w_effect,2)))
+rownames(simple_summary) <- c("Mean relative risk",
+                              "10th percentile",
+                              "90th percentile",
+                              "Permutation type I error",
+                              "Permutation power")
+kable(simple_summary, format="markdown")
+```
+
+Endpoint comparison is only valid when:
+
+- Communities are all similar (i.e. iid)
+- Communities are randomly sampled into treatment or control groups
+- Each endpoint is measured without systematic measurement error
+
+## Parametric regression of the endpoint
+
+Compared a correctly-specified model to two misspecified models: one with only random effects and another with only $X$
+
+```{r parametric-correct, warning=FALSE, message=FALSE, cache=TRUE, autodep=TRUE}
+sim_tau_hat_effect <- c()
+sim_tau_p_effect <- c()
+for(i in 1:sims){
+    tmp_sims <- effect_sims %>% filter(sim==i)
+    sim_fit <- gam(y~s(loc, bs="re") + s(time, bs="re") + log(X+.01) + as.factor(intervention),
+                   data=tmp_sims, family=nb)
+    sim_tau_hat_effect[i] <- exp(sim_fit$coefficients[3])
+    sim_tau_p_effect[i] <- summary(sim_fit)$p.pv[3]
+}
+```
+
+```{r parametric-correct-no-effect, warning=FALSE, message=FALSE, cache=TRUE, autodep=TRUE}
+sim_tau_hat_no_effect <- c()
+sim_tau_p_no_effect <- c()
+for(i in 1:sims){
+    tmp_sims <- no_effect_sims %>% filter(sim==i)
+    sim_fit <- gam(y~s(loc, bs="re") + s(time, bs="re") + log(X+.01) + as.factor(intervention),
+                   data=tmp_sims, family=nb)
+    sim_tau_hat_no_effect[i] <- exp(sim_fit$coefficients[3])
+    sim_tau_p_no_effect[i] <- summary(sim_fit)$p.pv[3]
+}
+```
+
+```{r parametric-re, warning=FALSE, message=FALSE, cache=TRUE, autodep=TRUE}
+sim_tau_hat_effect_re <- c()
+sim_tau_p_effect_re <- c()
+for(i in 1:sims){
+    tmp_sims <- effect_sims %>% filter(sim==i)
+    sim_fit <- gam(y~s(loc, bs="re") + s(time, bs="re") + as.factor(intervention),
+                   data=tmp_sims, family=nb)
+    sim_tau_hat_effect_re[i] <- exp(sim_fit$coefficients[2])
+    sim_tau_p_effect_re[i] <- summary(sim_fit)$p.pv[2]
+}
+```
+
+```{r parametric-re-no-effect, warning=FALSE, message=FALSE, cache=TRUE, autodep=TRUE}
+sim_tau_hat_no_effect_re <- c()
+sim_tau_p_no_effect_re <- c()
+for(i in 1:sims){
+    tmp_sims <- no_effect_sims %>% filter(sim==i)
+    sim_fit <- gam(y~s(loc, bs="re") + s(time, bs="re") + as.factor(intervention),
+                   data=tmp_sims, family=nb)
+    sim_tau_hat_no_effect_re[i] <- exp(sim_fit$coefficients[2])
+    sim_tau_p_no_effect_re[i] <- summary(sim_fit)$p.pv[2]
+}
+```
+
+```{r parametric-x, warning=FALSE, message=FALSE, cache=TRUE, autodep=TRUE}
+sim_tau_hat_effect_x <- c()
+sim_tau_p_effect_x <- c()
+for(i in 1:sims){
+    tmp_sims <- effect_sims %>% filter(sim==i)
+    sim_fit <- gam(y~X + as.factor(intervention),
+                   data=tmp_sims, family=nb)
+    sim_tau_hat_effect_x[i] <- exp(sim_fit$coefficients[3])
+    sim_tau_p_effect_x[i] <- summary(sim_fit)$p.pv[3]
+}
+```
+
+```{r parametric-x-no-effect, warning=FALSE, message=FALSE, cache=TRUE, autodep=TRUE}
+sim_tau_hat_no_effect_x <- c()
+sim_tau_p_no_effect_x <- c()
+for(i in 1:sims){
+    tmp_sims <- no_effect_sims %>% filter(sim==i)
+    sim_fit <- gam(y~X + as.factor(intervention),
+                   data=tmp_sims, family=nb)
+    sim_tau_hat_no_effect_x[i] <- exp(sim_fit$coefficients[3])
+    sim_tau_p_no_effect_x[i] <- summary(sim_fit)$p.pv[3]
+}
+```
+
+```{r parametric-summary, warning=FALSE, message=FALSE}
+tau_hat_correct_w_effect <- mean(sim_tau_hat_effect)
+tau_hat_correct_w_effect_10 <- quantile(sim_tau_hat_effect, probs=.1)
+tau_hat_correct_w_effect_90 <- quantile(sim_tau_hat_effect, probs=.9)
+signif_w_effect <- mean(sim_tau_p_effect<.1 & sim_tau_hat_effect<1)
+
+tau_hat_correct_wo_effect <- mean(sim_tau_hat_no_effect)
+tau_hat_correct_wo_effect_10 <- quantile(sim_tau_hat_no_effect, probs=.1)
+tau_hat_correct_wo_effect_90 <- quantile(sim_tau_hat_no_effect, probs=.9)
+signif_wo_effect <- mean(sim_tau_p_no_effect<.1 & sim_tau_hat_no_effect<1)
+
+tau_hat_re_w_effect <- mean(sim_tau_hat_effect_re)
+tau_hat_re_w_effect_10 <- quantile(sim_tau_hat_effect_re, probs=.1)
+tau_hat_re_w_effect_90 <- quantile(sim_tau_hat_effect_re, probs=.9)
+signif_w_effect_re <- mean(sim_tau_p_effect_re<.1 & sim_tau_hat_effect_re<1)
+
+tau_hat_re_wo_effect <- mean(sim_tau_hat_no_effect_re)
+tau_hat_re_wo_effect_10 <- quantile(sim_tau_hat_no_effect_re, probs=.1)
+tau_hat_re_wo_effect_90 <- quantile(sim_tau_hat_no_effect_re, probs=.9)
+signif_wo_effect_re <- mean(sim_tau_p_no_effect_re<.1 & sim_tau_hat_no_effect_re<1)
+
+tau_hat_x_w_effect <- mean(sim_tau_hat_effect_x)
+tau_hat_x_w_effect_10 <- quantile(sim_tau_hat_effect_x, probs=.1)
+tau_hat_x_w_effect_90 <- quantile(sim_tau_hat_effect_x, probs=.9)
+signif_w_effect_x <- mean(sim_tau_p_effect_x<.1 & sim_tau_hat_effect_x<1)
+
+tau_hat_x_wo_effect <- mean(sim_tau_hat_no_effect_x)
+tau_hat_x_wo_effect_10 <- quantile(sim_tau_hat_no_effect_x, probs=.1)
+tau_hat_x_wo_effect_90 <- quantile(sim_tau_hat_no_effect_x, probs=.9)
+signif_wo_effect_x <- mean(sim_tau_p_no_effect_x<.1 & sim_tau_hat_no_effect_x<1)
+
+param_summary <- data_frame(`Correct No Effect` = c(round(tau_hat_correct_wo_effect,2),
+                                                 round(tau_hat_correct_wo_effect_10,2),
+                                                 round(tau_hat_correct_wo_effect_90,2),
+                                                 round(signif_wo_effect,2),
+                                                 NA),
+                         `RE No Effect` = c(round(tau_hat_re_wo_effect,2),
+                                            round(tau_hat_re_wo_effect_10,2),
+                                            round(tau_hat_re_wo_effect_90,2),
+                                            round(signif_wo_effect_re,2),
+                                            NA),
+                         `X No Effect` = c(round(tau_hat_x_wo_effect,2),
+                                           round(tau_hat_x_wo_effect_10,2),
+                                           round(tau_hat_x_wo_effect_90,2),
+                                           round(signif_wo_effect_x,2),
+                                           NA),
+                         `Correct $\\tau$=0.7` = c(round(tau_hat_correct_w_effect,2),
+                                                   round(tau_hat_correct_w_effect_10,2),
+                                                   round(tau_hat_correct_w_effect_90,2),
+                                                   NA,
+                                                   round(signif_w_effect,2)),
+                         `RE $\\tau$=0.7` = c(round(tau_hat_re_w_effect,2),
+                                              round(tau_hat_re_w_effect_10,2),
+                                              round(tau_hat_re_w_effect_90,2),
+                                              NA,
+                                              round(signif_w_effect_re,2)),
+                         `X $\\tau$=0.7` = c(round(tau_hat_x_w_effect,2),
+                                             round(tau_hat_x_w_effect_10,2),
+                                             round(tau_hat_x_w_effect_90,2),
+                                             NA,
+                                             round(signif_w_effect_x,2)))
+rownames(param_summary) <- c("$\\hat{\\tau}$",
+                              "10th percentile",
+                              "90th percentile",
+                              "Model type I error",
+                              "Model power")
+kable(param_summary, format="markdown")
+```
+
+- Misspecified models may have increased bias or variance in their estimates for the intervention effect
+
+## Propensity score
+
+```{r propensity-effect, warning=FALSE, message=FALSE, cache=TRUE, autodep=TRUE}
+sim_propensity_effect <- c()
+for(i in 1:sims){
+    tmp_sims <- effect_sims %>% filter(sim==i, time==17)
+    sim_fit <- gam(intervention ~ X,
+                   data=tmp_sims, family=binomial)
+    sim_tau_hat_effect_x[i] <- exp(sim_fit$coefficients[3])
+    sim_tau_p_effect_x[i] <- summary(sim_fit)$p.pv[3]
+}
+```
+
+```{r propensity-no-effect, warning=FALSE, message=FALSE, cache=TRUE, autodep=TRUE}
+sim_tau_hat_no_effect_x <- c()
+sim_tau_p_no_effect_x <- c()
+for(i in 1:sims){
+    tmp_sims <- no_effect_sims %>% filter(sim==i, time==17)
+    sim_fit <- gam(y~X + as.factor(intervention),
+                   data=tmp_sims, family=nb)
+    sim_tau_hat_no_effect_x[i] <- exp(sim_fit$coefficients[3])
+    sim_tau_p_no_effect_x[i] <- summary(sim_fit)$p.pv[3]
+}
+```
