@@ -33,17 +33,17 @@ Data:
 - Endpoint measurements
 - "Confounders", covariates measured prior to the intervention that may affect the intervention and/or endpoint
 
-<!-- ## Data analysis protocol (Box 2 on p.6) -->
+## Data analysis protocol (Box 2 on p.6)
 
-<!-- Investigators need to write out the following components of their experiment: -->
+Investigators need to write out the following components of their experiment:
 
-<!-- 1) Study design (data-generating process) -->
-<!-- 2) Data -->
-<!-- 3) Estimand (statistical target parameter) -->
-<!-- 4) Statistical model -->
-<!-- 5) Estimator for the estimand -->
-<!-- 6) Estimator for the variance -->
-<!-- 7) Interpretation of results -->
+1) Study design (data-generating process)
+2) Data
+3) Estimand (statistical target parameter)
+4) Statistical model
+5) Estimator for the estimand
+6) Estimator for the variance
+7) Interpretation of results
 
 ## Simulation setup
 
@@ -106,7 +106,7 @@ for(i in 1:sims){
     sim_dat$gamma <- gamma[sim_dat$time]
     sim_dat$X <- rpois(nrow(sim_dat), 7.75)
     ## set interventions at time==17
-    sim_dat$p[sim_dat$time==17] <- rbeta(76, (sim_dat$X[sim_dat$time==17]+1)^2/8.75^2, 1)
+    sim_dat$p[sim_dat$time==17] <- rbeta(76, (sim_dat$X[sim_dat$time==17]+.01)^2/7.76^2, 1)
     sim_dat$intervention[sim_dat$time==17] <- rbinom(76, 1, sim_dat$p[sim_dat$time==17])
     
     ## calculate y based on alpha, gamma, and intervention
@@ -155,7 +155,7 @@ for(i in 1:sims){
     sim_dat$gamma <- gamma[sim_dat$time]
     sim_dat$X <- rpois(nrow(sim_dat), 7.75)
     ## set interventions at time==17
-    sim_dat$p[sim_dat$time==17] <- rbeta(76, (sim_dat$X[sim_dat$time==17]+1)^2/8.75^2, 1)
+    sim_dat$p[sim_dat$time==17] <- rbeta(76, (sim_dat$X[sim_dat$time==17]+.01)^2/7.76^2, 1)
     sim_dat$intervention[sim_dat$time==17] <- rbinom(76, 1, sim_dat$p[sim_dat$time==17])
     
     ## calculate y based on alpha, gamma, and intervention
@@ -395,25 +395,41 @@ kable(param_summary, format="markdown")
 
 ## Propensity score
 
-```{r propensity-effect, warning=FALSE, message=FALSE, cache=TRUE, autodep=TRUE}
-sim_propensity_effect <- c()
-for(i in 1:sims){
-    tmp_sims <- effect_sims %>% filter(sim==i, time==17)
-    sim_fit <- gam(intervention ~ X,
-                   data=tmp_sims, family=binomial)
-    sim_tau_hat_effect_x[i] <- exp(sim_fit$coefficients[3])
-    sim_tau_p_effect_x[i] <- summary(sim_fit)$p.pv[3]
-}
-```
+Another method of estimating the effect of an intervention uses "propensity scores" which quantify the likelihood that an intervention occurs for a given observation.
 
-```{r propensity-no-effect, warning=FALSE, message=FALSE, cache=TRUE, autodep=TRUE}
-sim_tau_hat_no_effect_x <- c()
-sim_tau_p_no_effect_x <- c()
-for(i in 1:sims){
-    tmp_sims <- no_effect_sims %>% filter(sim==i, time==17)
-    sim_fit <- gam(y~X + as.factor(intervention),
-                   data=tmp_sims, family=nb)
-    sim_tau_hat_no_effect_x[i] <- exp(sim_fit$coefficients[3])
-    sim_tau_p_no_effect_x[i] <- summary(sim_fit)$p.pv[3]
-}
-```
+1) Run a regression using the confounders to predict the _intervention status_ rather than the outcome of interest. This could be a logistic regression to predict the probability of an intervention.
+2) Use the regression equation to come up with a new covariate for each observation called the "propensity score"
+3) Group propensity scores by quintiles and judge the intervention effect for each range of values
+
+Note: I couldn't get step (1) to work for my simulated data
+
+## Data adaptive methods for model selection
+
+- Petersen and van der Laan suggest using cross validation to find a model that makes predictions that optimize pre-specified performance criteria on out-of-sample data
+- This can help avoid model misspecification and bias
+- This method is good for choosing a model to predict the outcome of interest, but not necessarily best for estimating the causal effect of the intervention
+
+## Efficient double robust estimators
+
+- Estimators that use either endpoint regression or the intervention mechanism to estimate the effect of the intervention are called _efficient double robust estimators_
+- "Double robust" refers to the fact that if either the endpoint or the intervention mechanism can be estimated consistently, then the intervention effect can be estimated
+- "Efficient" refers to the fact that if both the endpoint and the intervention mechanism can be estimated consistently, then the intervention effect estimator will have the lowest variance of any "regular estimator"
+
+## Targeted Maximum Likelihood Estimation (TMLE)
+
+An example of an efficient double robust estimator is the TMLE, which is conducted as follows:
+
+1) Use cross validation to estimate the mean of the endpoint given the intervention and confounders
+2) Use cross validation to estimate the propensity score (probability of intervention given confounders)
+3) Use the estimated propensity score to calculate the "clever covariate": $1/\text{propensity}$ for communities with an intervention and $-1/(1-\text{propensity})$ for communities without an intervention
+4) Update the initial endpoint regression by fitting a new regression of the endpoint on the clever covariate, using the initial fit as an offset and suppressing the intercept term. If the intervention mechanism is well estimated, this step reduces bias in the effect estimate.
+5) Estimate the average effect of the intervention by generating a predicted value of the endpoint for each community with and without the intervention using the fit in the last step.
+
+## Thoughts
+
+- It's neat that we've basically completed the first part of this, with our cross validation of models to predict annual DHF incidence
+    - Though haven't checked the bias of the forecasts
+- Will have to give some more thought to propensity scores
+- Might be difficult to come up with a novel extension, as this is an introductory paper. Need to do more literature review.
+    - An application could be fairly straightforward though.
+    - How accurate do models have to be in order to get an accurate estimate for $\tau$? Has this already been studied?
