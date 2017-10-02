@@ -1,0 +1,51 @@
+---
+title: Model-based projections of Zika virus infections in childbearing women in the
+  Americas (Perkins *et al.*)
+author: "Stephen A Lauer"
+date: "October 2, 2017"
+output: ioslides_presentation
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+## Main idea
+
+- Zika virus spread across the Americas in 2016
+- Zika causes microcephaly and death in fetuses of infected pregnant women
+- The authors wanted to estimate the number of childbearing women at risk using existing knowledge about:
+    - Infectious disease dynamics (including herd immunity)
+    - The lifecycle of *Aedes Aegypti* mosquitoes
+    - The regional demographics and economics of the Americas
+- Resulting estimates can be seen as either:
+    - A plausible worst-case scenario or
+    - An expectation of local epidemic size conditional on there being a local epidemic in the first place
+
+## Data
+
+- 100m x 100m grid cells for population
+- National-level data used to construct pregnancy and birth counts
+- 5km x 5km gridded temperature data
+- Used temperature, Enhanced Vegetation Index, precipitation, and urbanization index to model *Aedes* mosquito occurrence
+- 1 degree gridded estimates of purchasing power parity (PPP) in US$ adjusted for inflation for economic index
+- 13 seroprevalence estimates of Zika and chikungunya viruses in naive populations
+
+## Methods: Statistical model
+
+- The authors fit both a mechanistic model and statistical model and compared the results
+- Statistical model fit seroprevalence observations (all 13 of them) as a function of
+    - Average monthly temperatures
+    - *Aedes* occurrence
+    - Economic index
+- Considered all linear, quadratic, and pairwise interaction terms of the variables
+- Chose the one that performed best by AIC
+- Seems like a lot to ask out of a statistical model
+
+## Results: Statistical model
+
+- Statistical model accounted for more variation in seroprevalence estimates () than the mechanistic approach
+- Predicted that either everyone in a region would be infected or nobody would
+    - Might not be consistent with epidemiological theory
+- Attack rates went to 100% with increasing temperature
+- 
