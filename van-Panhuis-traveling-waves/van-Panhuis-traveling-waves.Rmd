@@ -1,0 +1,37 @@
+---
+title: Region-wide synchrony and traveling waves of dengue across eight countries in Southeast Asia
+author: "van Panhuis et al."
+date: "January 22, 2018"
+output: beamer_presentation
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+## Traveling waves background
+
+- This work was a followup to Derek AT Cummings paper on the traveling waves of Thailand (2004)
+- That paper used wavelet analysis on Thailand to show that there were was inter-annual synchrony between neighboring provinces and multi-annual trends ("waves") in dengue that pulsed from Bangkok to the rest of the country
+    - Used data from 1983-1997
+- This paper extends wavelets to the provinces of 8 countries in Southeast Asia and incorporates weather information
+    - Using data from 1993-2010
+
+## Slide with Bullets
+
+- Bullet 1
+- Bullet 2
+- Bullet 3
+
+## Slide with R Output
+
+```{r cars, echo = TRUE}
+summary(cars)
+```
+
+## Slide with Plot
+
+```{r pressure}
+plot(pressure)
+```
+
