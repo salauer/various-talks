@@ -1,8 +1,12 @@
 ---
 title: Region-wide synchrony and traveling waves of dengue across eight countries in Southeast Asia
-author: "van Panhuis et al."
-date: "January 22, 2018"
-output: beamer_presentation
+author: van Panhuis *et al.*
+date: January 22, 2018
+output: 
+    beamer_presentation:
+        includes:
+            in_header: slide-numbers.tex
+        fig_caption: false
 ---
 
 ```{r setup, include=FALSE}
@@ -17,21 +21,97 @@ knitr::opts_chunk$set(echo = FALSE)
 - This paper extends wavelets to the provinces of 8 countries in Southeast Asia and incorporates weather information
     - Using data from 1993-2010
 
-## Slide with Bullets
+## What are we looking at/for?
 
-- Bullet 1
-- Bullet 2
-- Bullet 3
+\begin{center}
+\includegraphics[width=\linewidth]{figure/se-asia-map.png}
+\end{center}
 
-## Slide with R Output
+## What are we looking at/for?
 
-```{r cars, echo = TRUE}
-summary(cars)
-```
+\begin{center}
+\includegraphics[width=\linewidth]{figure/raw-data.png}
+\end{center}
 
-## Slide with Plot
+There are clear annual trends, but multi-annual trends and figuring out who is leading or lagging is difficult.
 
-```{r pressure}
-plot(pressure)
-```
+## Wavelets, why use them?
 
+<!-- > "Used to decompose a time series into time-frequency space to determine both the dominant modes of variability and how those modes vary in time" -->
+
+<!-- -- Torrence and Compo (_A practical guide to wavelet analysis_, 1998) -->
+
+- Consider a time series of dengue incidence
+- This has two dimensions, time and cases
+- Each observation is affected by "waves" of different frequencies:
+    - AR frequency, a 1-step wave
+    - Seasonal frequency, a 1-year wave
+    - Multi-annual frequency, a multi-year wave
+- These waves have different amplitudes relative to each other, and can change over time
+- Different locations' waves differ by timing (some leading or lagging others) and duration, as well as amplitude
+- Wavelets attempt to preserve all of this information, so that we can determine which waves are responsible for the values we observe
+
+## Wavelets, what are they?
+
+- Sounds like a straightforward concept, but I don't really understand it
+- I've watched a few videos and read a couple papers/blog posts and have started to understand the frequency domain, but I get lost in the math
+- Seems like people who write and talk about it needed a while to comprehend it, but eventually had an epiphany and started to see the world differently -- I'd like to get there but need more time
+
+- This paper specificly uses Morlet wavelets, which have a nondimensional frequency parameter (???), in addition to the usual nondimensional time parameter
+    - Uses discrete Fourier transforms, complex numbers, and red noise (?!?)
+    - These are mostly another language to me
+
+## Wavelet figures
+
+Usually we see a figure like below, but not in this paper.
+
+\begin{center}
+\includegraphics[width=\linewidth]{figure/typical-wavelet.png}
+\end{center}
+
+## Results: strong region-wide annual synchrony
+
+\begin{center}
+\includegraphics[width=\linewidth]{figure/annual-cycles.png}
+\end{center}
+
+## Results: periods of strong region-wide multiannual synchrony
+
+\begin{center}
+\includegraphics[width=\linewidth]{figure/multiannual-cycles.png}
+\end{center}
+
+## Results: synchrony by distance
+
+\begin{center}
+\includegraphics[width=0.8\linewidth]{figure/annual-synch-distance.png}
+\end{center}
+
+## Results: strong synchrony with climate
+
+\begin{center}
+\includegraphics[width=\linewidth]{figure/el-nino-coherence.png}
+\end{center}
+
+The strange color scale seems to underestimate the coherence here.
+
+## Results: multi-annual frequency may vary by region
+
+\begin{center}
+\includegraphics[width=\linewidth]{figure/power-by-periodicity.png}
+\end{center}
+
+## Results: synchrony between specific regions
+
+Kinda nifty, see supplement
+
+## Discussion
+
+- The actual traveling waves portion of the paper seemed a bit weak. There's no obvious geographical trend, though Bangkok was still listed as a leading province. Perhaps there is a metropolitan center effect, but that isn't mentioned in the paper.
+- Would have liked to have seen some validation, leaving out observations in order to check hypotheses about synchrony. They depended a lot on pairwise correlation
+
+## Stranger methods
+
+- For a missing month in a province, they imputed by randomly drawing incidence from the same month in the same province but different years
+    - I don't think this is bad, but would have thought that a seasonal AR model could have gotten better estimates
+    - On the other hand, if results are still strong despite random months being inserted around, then the relationship is probably valid
