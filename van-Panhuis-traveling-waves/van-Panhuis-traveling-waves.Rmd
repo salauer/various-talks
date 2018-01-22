@@ -108,10 +108,7 @@ Kinda nifty, see supplement
 ## Discussion
 
 - The actual traveling waves portion of the paper seemed a bit weak. There's no obvious geographical trend, though Bangkok was still listed as a leading province. Perhaps there is a metropolitan center effect, but that isn't mentioned in the paper.
-- Would have liked to have seen some validation, leaving out observations in order to check hypotheses about synchrony. They depended a lot on pairwise correlation
-
-## Stranger methods
-
-- For a missing month in a province, they imputed by randomly drawing incidence from the same month in the same province but different years
-    - I don't think this is bad, but would have thought that a seasonal AR model could have gotten better estimates
-    - On the other hand, if results are still strong despite random months being inserted around, then the relationship is probably valid
+    - I might be underselling this; could just be that I didn't find it as interesting as the rest of the paper.
+- Would have liked to have seen some validation, rather than just hypothesis testing, which they rely heavily upon.
+    - Perhaps remove some end values and try to predict them using a model based on annual cycles with and without multiannual cycles to see if the multiannual cycles add value to forecasts?
+    - Difficult because wavelets can have large edge effects
