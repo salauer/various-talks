@@ -1,0 +1,160 @@
+\documentclass{beamer}
+
+\usepackage[english]{babel}
+\usepackage[latin1]{inputenc}
+\usepackage{times}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+%\usepackage{lmodern}
+% Or whatever. Note that the encoding and the font should match. If T1
+% does not look nice, try deleting the line with the fontenc.
+\usepackage{multirow}
+\usepackage{color, colortbl}
+% \usepackage{cite}
+% \usepackage{biblatex}
+\usepackage{hyperref}
+% \usepackage{caption}
+
+% \DeclareMathSizes{16}{20}{14}{10}
+
+\mode<handout>{\setbeamercolor{background canvas}{bg=black!5}}
+\mode<article>{
+\topmargin 0.0cm
+%\oddsidemargin 0.2cm
+%\textwidth 16cm
+\textheight 21cm
+\footskip 1.0cm
+
+\renewcommand\floatpagefraction{.9}
+\renewcommand\topfraction{.9}
+\renewcommand\bottomfraction{.9}
+\renewcommand\textfraction{.1}
+}
+
+\mode<presentation>
+{
+\setbeamertemplate{navigation symbols}{}
+%\setbeamerfont{frametitle}{size=\large}
+%\usetheme[hideothersubsections, width=0in]{Berkeley}
+\useinnertheme{rectangles}
+\definecolor{UMassRed}{RGB}{150,0,36}
+\definecolor{UMassBlack}{RGB}{51, 51, 51}
+\definecolor{light-gray}{gray}{0.8}
+\definecolor{HopkinsBlue}{RGB}{28,72,130}
+\definecolor{HopkinsOlive}{RGB}{132,122,21}
+
+\setbeamercolor{frametitle}{fg=white, bg=UMassRed}
+\setbeamercolor{section in head/foot}{fg=white, bg=gray}
+
+%  \setbeamercolor{itemize item}{fg=HopkinsBlue}
+%  \setbeamercolor{itemize subitem}{fg=HopkinsBlue}
+\setbeamercolor{title}{fg=UMassRed}
+\setbeamertemplate{enumerate items}[default]
+\setbeamercolor{enumerate item}{fg=UMassBlack}
+\setbeamercolor{section number projected}{bg=black}
+\setbeamercolor{section in toc}{fg=UMassRed}
+\setbeamercolor{subsection number projected}{bg=UMassRed}
+\setbeamercolor{itemize item}{fg=UMassBlack}
+\setbeamercolor{itemize subitem}{fg=UMassRed}
+
+\setbeamertemplate{frametitle}
+{
+\begin{beamercolorbox}[wd=\paperwidth, sep=.01cm] {frametitle}
+%\pgfdeclaremask{hopkinsmask}{ce_icon2}
+%\pgfputat{\pgfxy(0,0)}{\pgfimage[height=1cm]
+%  {ce_icon2}}
+\begin{minipage}[t]{0.6cm}
+\vspace{0pt}
+\begin{beamercolorbox}[wd=.6cm] {frametitle}
+%\includegraphics[height=1cm]{ce_icon2}
+\end{beamercolorbox}
+\end{minipage}
+\begin{minipage}[t]{.9\paperwidth}
+\vspace{0pt}
+\begin{beamercolorbox}[wd=.85\paperwidth, sep=.2cm] {}
+{\Large \insertframetitle}
+\par
+{\large \insertframesubtitle}
+% \vskip5pt
+\end{beamercolorbox}
+\end{minipage}
+\end{beamercolorbox}
+}
+
+\setbeamertemplate{footline}
+{\leavevmode
+\begin{beamercolorbox}[ht=2.5ex,dp=1ex, wd=.85\paperwidth]
+{section in head/foot}
+\raggedright{\quad \insertsection \qquad
+\emph{ \insertsubsection}}
+\end{beamercolorbox}
+\begin{beamercolorbox}[ht=2.5ex, dp=1ex,
+wd=.15\paperwidth]{section in head/foot}
+\raggedleft{\insertframenumber/26 \ }
+\end{beamercolorbox}
+
+}
+
+}
+
+\newenvironment{changemargin}[2]{
+\begin{list}{}{
+\setlength{\topsep}{0pt}
+\setlength{\leftmargin}{#1}
+\setlength{\rightmargin}{#2}
+\setlength{\parindent}{0cm}
+\setlength{\listparindent}{\parindent}
+\setlength{\itemindent}{\parindent}
+\setlength{\parsep}{\parskip}
+}
+\item[]}{\end{list}}
+
+%Allows the insertion of background images
+\newcommand\BackgroundPicture[1]{
+\setbeamertemplate{background}{
+\parbox[c][\paperheight]{\paperwidth}{
+\includegraphics[height=1\paperheight]{#1}
+\hfill \vfill
+}}}
+
+\setbeamertemplate{navigation symbols}{} %get rid of the navigation symbols
+
+
+% \newcommand*\UMass{\item[\includegraphics[height=1.6ex]{Umass_logo.png}]}
+% \newcommand*\JH{\item[\includegraphics[height=1.6ex]{failimg}]}
+% \newcommand*\MOPH{\item[\includegraphics[height=1.6ex]{failimg}]}
+
+\renewcommand{\arraystretch}{1.5}
+
+\newcommand{\as}{\stackrel{a.s.}{\longrightarrow}}
+
+\DeclareFontShape{OT1}{cmtt}{bx}{n}{
+<5><6><7><8><9><10><10.95><12><14.4><17.28><20.74><24.88>cmttb10}{}
+
+\title{Real-time prediction of \\ dengue fever in Thailand}
+\author{Stephen A Lauer}
+\institute{Reich Lab, Department of Biostatistics and Epidemiology,\\ University of Massachusetts, Amherst}
+
+% \titlegraphic{
+% \includegraphics[width=2.5cm]{Umass_logo.png}
+% \hspace*{0.75cm}~
+% \includegraphics[width=2.5cm]{Thai-MoPH-logo.jpg}
+% \hspace*{0.75cm}~
+% \includegraphics[height=2.25cm]{JH-logo.jpg}
+% }
+
+\date{26 April 2018}
+
+\begin{document}
+
+
+\begin{frame}[plain]
+\titlepage
+\only<article>{\maketitle}
+\end{frame}
+
+\begin{frame}{Forecasting projects}
+
+\end{frame}
+
+\end{document}
