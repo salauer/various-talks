@@ -20,7 +20,7 @@
 \mode<handout>{\setbeamercolor{background canvas}{bg=black!5}}
 \mode<article>{
 \topmargin 0.0cm
-%\oddsidemargin 0.2cm
+% \oddsidemargin 0.2cm
 %\textwidth 16cm
 \textheight 21cm
 \footskip 1.0cm
@@ -34,8 +34,6 @@
 \mode<presentation>
 {
 \setbeamertemplate{navigation symbols}{}
-%\setbeamerfont{frametitle}{size=\large}
-%\usetheme[hideothersubsections, width=0in]{Berkeley}
 \useinnertheme{rectangles}
 \definecolor{UMassRed}{RGB}{150,0,36}
 \definecolor{UMassBlack}{RGB}{51, 51, 51}
@@ -46,8 +44,6 @@
 \setbeamercolor{frametitle}{fg=white, bg=UMassRed}
 \setbeamercolor{section in head/foot}{fg=white, bg=gray}
 
-%  \setbeamercolor{itemize item}{fg=HopkinsBlue}
-%  \setbeamercolor{itemize subitem}{fg=HopkinsBlue}
 \setbeamercolor{title}{fg=UMassRed}
 \setbeamertemplate{enumerate items}[default]
 \setbeamercolor{enumerate item}{fg=UMassBlack}
@@ -60,14 +56,10 @@
 \setbeamertemplate{frametitle}
 {
 \begin{beamercolorbox}[wd=\paperwidth, sep=.01cm] {frametitle}
-%\pgfdeclaremask{hopkinsmask}{ce_icon2}
-%\pgfputat{\pgfxy(0,0)}{\pgfimage[height=1cm]
-%  {ce_icon2}}
 \begin{minipage}[t]{0.6cm}
 \vspace{0pt}
 \begin{beamercolorbox}[wd=.6cm] {frametitle}
-%\includegraphics[height=1cm]{ce_icon2}
-\end{beamercolorbox}
+\end{beamercolorbox}%
 \end{minipage}
 \begin{minipage}[t]{.9\paperwidth}
 \vspace{0pt}
@@ -87,42 +79,38 @@
 {section in head/foot}
 \raggedright{\quad \insertsection \qquad
 \emph{ \insertsubsection}}
-\end{beamercolorbox}
+\end{beamercolorbox}%
 \begin{beamercolorbox}[ht=2.5ex, dp=1ex,
 wd=.15\paperwidth]{section in head/foot}
-\raggedleft{\insertframenumber/26 \ }
-\end{beamercolorbox}
+\raggedleft{\insertframenumber/18 \ }
+
+\end{beamercolorbox}%
 
 }
 
 }
 
-\newenvironment{changemargin}[2]{
-\begin{list}{}{
-\setlength{\topsep}{0pt}
-\setlength{\leftmargin}{#1}
-\setlength{\rightmargin}{#2}
-\setlength{\parindent}{0cm}
-\setlength{\listparindent}{\parindent}
-\setlength{\itemindent}{\parindent}
-\setlength{\parsep}{\parskip}
-}
+\newenvironment{changemargin}[2]{%
+\begin{list}{}{%
+\setlength{\topsep}{0pt}%
+\setlength{\leftmargin}{#1}%
+\setlength{\rightmargin}{#2}%
+\setlength{\parindent}{0cm}%
+\setlength{\listparindent}{\parindent}%
+\setlength{\itemindent}{\parindent}%
+\setlength{\parsep}{\parskip}%
+}%
 \item[]}{\end{list}}
 
 %Allows the insertion of background images
-\newcommand\BackgroundPicture[1]{
-\setbeamertemplate{background}{
-\parbox[c][\paperheight]{\paperwidth}{
+\newcommand\BackgroundPicture[1]{%
+\setbeamertemplate{background}{%
+\parbox[c][\paperheight]{\paperwidth}{%
 \includegraphics[height=1\paperheight]{#1}
 \hfill \vfill
 }}}
 
 \setbeamertemplate{navigation symbols}{} %get rid of the navigation symbols
-
-
-% \newcommand*\UMass{\item[\includegraphics[height=1.6ex]{Umass_logo.png}]}
-% \newcommand*\JH{\item[\includegraphics[height=1.6ex]{failimg}]}
-% \newcommand*\MOPH{\item[\includegraphics[height=1.6ex]{failimg}]}
 
 \renewcommand{\arraystretch}{1.5}
 
@@ -131,7 +119,16 @@ wd=.15\paperwidth]{section in head/foot}
 \DeclareFontShape{OT1}{cmtt}{bx}{n}{
 <5><6><7><8><9><10><10.95><12><14.4><17.28><20.74><24.88>cmttb10}{}
 
-\title{Real-time prediction of \\ dengue fever in Thailand}
+\setbeamertemplate{bibliography entry title}{}
+\setbeamertemplate{bibliography entry location}{}
+\setbeamertemplate{bibliography entry note}{}
+
+\newcommand{\etal}{\textit{et al}.}
+\newcommand{\etalspace}{\textit{et al}. }
+\newcommand{\ie}{\textit{i}.\textit{e}. }
+\newcommand{\eg}{\textit{e}.\textit{g}. }
+
+\title{Annual forecasts of \\ dengue hemorrhagic fever incidence in Thailand}
 \author{Stephen A Lauer}
 \institute{Reich Lab, Department of Biostatistics and Epidemiology,\\ University of Massachusetts, Amherst}
 
@@ -154,6 +151,63 @@ wd=.15\paperwidth]{section in head/foot}
 \end{frame}
 
 \begin{frame}{Forecasting projects}
+
+\begin{itemize}
+    \item \textbf{Onset of the influenza season}
+    \begin{itemize}
+        \item Used an algorithm to find optimal threshold to signal season onset (Reich \etal, 2014)
+    \end{itemize}
+    \item \textbf{Short-term dengue incidence forecasts}
+    \begin{itemize}
+        \item Validation and evaluation of retrospective forecasts from a spatio-temporal model (Reich \etal, 2016)
+        \item Evaluation of spatio-temporal model in a real-time context (Reich \etal, 2016)
+        \item Kernal conditional density estimation for retrospective forecasts (Ray \etal, 2017)
+    \end{itemize}
+    \item \textbf{Reporting delay modeling}
+    \begin{itemize}
+        \item Expansion factors to update recent, incomplete counts to improve short-term forecasts (Sakrejda \etal, in progress)
+    \end{itemize}
+    \item \textbf{General}
+    \begin{itemize}
+        \item The \texttt{ForecastFramework} package helps researchers build, validate, and evaluate forecasting models
+    \end{itemize}
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}{Lessons learned}
+
+\begin{itemize}
+    \item There is no single best model for all situations (\ie disease, forecast target, spatial or temporal scale)
+    \begin{itemize}
+        \item Simple models can be frustratingly good
+        \item Ensembles can help find best models for a given situation (not presented here)
+    \end{itemize}
+    \item Overfitting on training data is a huge issue, making forecasts non-generalizable
+    \begin{itemize}
+        \item Can even occur when cross-validating a model
+    \end{itemize}
+    \item Evaluation metrics affect both model building and interpretation of results
+    \begin{itemize}
+        \item And thus should not be taken lightly
+    \end{itemize}
+    \item Forecasting techniques could be applied more broadly
+    \begin{itemize}
+        \item For use in estimation or causal inference
+    \end{itemize}
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}{Background}
+
+\begin{itemize}
+    \item Our group started making short-term DHF forecasts for the Thailand Ministry of Public Health (MOPH) in 2013
+    \item Every April/May, we go to Bangkok to discuss progress
+    \item In 2015, they asked "Is this year going to be big?"
+    \item Our short-term biweekly forecasts were not accurate that far into the future
+\end{itemize}
+\textbf{Goal: in April of each year, make ``annual'' forecasts for the rest of the year, given the data we have through March}
 
 \end{frame}
 
