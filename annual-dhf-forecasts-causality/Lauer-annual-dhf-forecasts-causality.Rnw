@@ -144,7 +144,6 @@ wd=.15\paperwidth]{section in head/foot}
 
 \begin{document}
 
-
 \begin{frame}[plain]
 \titlepage
 \only<article>{\maketitle}
@@ -199,17 +198,117 @@ wd=.15\paperwidth]{section in head/foot}
 
 \end{frame}
 
-\begin{frame}{Background}
+\begin{frame}
+
+\centering
+{\LARGE
+Forecasting annual dengue hemorrhagic fever incidence in Thailand}
+
+\end{frame}
+
+\begin{frame}{Origin story}
 
 \begin{itemize}
-    \item Our group started making short-term DHF forecasts for the Thailand Ministry of Public Health (MOPH) in 2013
+    \item Our group started making short-term dengue forecasts for the Thailand Ministry of Public Health (MOPH) in 2013
     \item Every April/May, we go to Bangkok to discuss progress
     \item In 2015, they asked "Is this year going to be big?"
-    \item Our short-term biweekly forecasts were not accurate that far into the future
+    \item Our short-term forecasts were not accurate that far into the future
 \end{itemize}
 \textbf{Goal: in April of each year, make ``annual'' forecasts for the rest of the year, given the data we have through March}
 
 \end{frame}
+
+\begin{frame}{Choosing a model}
+
+\begin{enumerate}
+    \item Rooted in the epidemiology and biology of dengue
+    \item Readily examinable and interpretable
+    \begin{itemize}
+        \item Results more valid and trustable (for us and MOPH)
+        \item Rules out black boxes
+    \end{itemize}
+    \item Flexible in handling non-linear relationships
+    \item Makes accurate forecasts for an actionable outcome
+\end{enumerate}
+
+\end{frame}
+
+\begin{frame}{Dengue basics}
+
+\centering
+\includegraphics[width=1\linewidth]{figure/mechanism-diagram.pdf}
+
+\end{frame}
+
+\begin{frame}{Dengue basics}
+
+\begin{itemize}
+\item Virus spread by \emph{Aedes} mosquitoes, mostly in tropics
+\item $\sim$390 million infections every year, most asymptomatic
+\item Dengue hemorrhagic fever (DHF) may lead to organ failure and death if untreated
+\end{itemize}
+
+\begin{center}
+\includegraphics[width=1\textwidth]{figure/dengue-regional-suitability.png}
+
+(Global Dengue Risk, Simmons et al., 2012)
+\end{center}
+
+\end{frame}
+
+\begin{frame}{Dengue basics: biology}
+
+\begin{columns}
+\begin{column}{0.5\textwidth}
+    \begin{itemize}
+        \item Four distinct serotypes (strains)
+        \item First infections are often asymptomatic
+        \item Second infections more likely to result in DHF
+        \item Difficult to determine susceptibility
+        \item Compartmental model hard to fit, near impossible to forecast from
+    \end{itemize}
+\end{column}
+\begin{column}{0.5\textwidth}
+    \begin{center}
+    \includegraphics[width=0.9\textwidth]{figure/dengue-serotypes.png}
+
+    Courtesy of Xi Meng
+    \end{center}
+\end{column}
+\end{columns}
+
+\end{frame}
+
+% \begin{frame}{Dengue basics: incidence}
+%
+% \includegraphics[width=1\linewidth]{figure/mechanism-diagram-incidence.pdf}
+%
+% \end{frame}
+%
+% \begin{frame}{Dengue basics: incidence}
+%
+% \begin{itemize}
+%     \item Virus spread by \textit{Aedes} mosquitoes
+%     % \item Four distinct serotypes (strains)
+%     \item First infections are often asymptomatic
+%     \begin{itemize}
+%         \item Difficult to estimate total number of infections
+%     \end{itemize}
+%     \item Second infections are more likely to result in dengue hemorrhagic fever (DHF)
+%     \begin{itemize}
+%         \item Can be life-threatening if left untreated
+%         \item Consistently reported over time by MOPH (since 1968!)
+%     \end{itemize}
+% \end{itemize}
+%
+% \end{frame}
+
+% \begin{frame}{Dengue basics: susceptibility}
+%
+% \includegraphics[width=1\linewidth]{figure/mechanism-diagram-susceptibility.pdf}
+%
+% \end{frame}
+
 
 \begin{frame}{DHF in Thailand}
 
@@ -230,11 +329,11 @@ wd=.15\paperwidth]{section in head/foot}
 
 \begin{frame}{DHF predictors}
 
-There are many potential drivers of annual DHF incidence:
+We aggregated a set of potential drivers of annual DHF incidence:
 
 \begin{itemize}
-    \item Prior incidence
-    \item Susceptibility
+    \item Early season incidence
+    \item Susceptibility (proxy)
     \item Population density
     \item Relative humidity (min, mean, max)
     \item Rainfall (max, total)
@@ -245,11 +344,11 @@ These are aggregated across individual months (Jan, Feb, Mar) and over seasonal 
 
 \end{frame}
 
-\begin{frame}{Seasonal time frames}
-
-\includegraphics[width=0.8\paperwidth]{figure/season-timing}
-
-\end{frame}
+% \begin{frame}{Seasonal time frames}
+%
+% \includegraphics[width=0.8\paperwidth]{figure/season-timing}
+%
+% \end{frame}
 
 \section*{Methods}
 
@@ -264,7 +363,7 @@ We model the incidence, $Y_{it}$, for province $i$ in year $t$ as a generalized 
 \end{align*}
 
 \begin{itemize}
-    \item $n_{it}$ is the population, $\lambda_{it}$ is the incidence rate, $r$ is the NB dispersion
+    \item $n_{it}$ is population, $\lambda_{it}$ is incidence rate, $r$ is NB dispersion
     \item $\alpha_i$ is a random effect for province, $g_j(x_{jit}|\boldsymbol{\theta})$ is a penalized cubic spline for the $j$th covariate
     % \item this model framework account for non-linear relationships between covariates and outcome and can be sampled from to get probabilistic forecasts
 \end{itemize}
@@ -273,10 +372,15 @@ We model the incidence, $Y_{it}$, for province $i$ in year $t$ as a generalized 
 
 \begin{frame}{Cross validation for variable selection}
 
+Want to use splines for flexibility and interpretability, but have too many covariates to fit a full model.
+Furthermore, model should be generalizable beyond this data (\ie future years).
+
 \begin{itemize}
-    \item We conducted leave-one-year-out cross validation with each candidate model across the training phase (2000-2009)
-    \item We used a forward-backward stepwise algorithm to select a model that minimized the cross-validated mean absolute error (CV MAE)
-    \item The model with the lowest CV MAE and the model with the fewest covariates within 1 SD of that model were selected to make forecasts for the testing phase (2010-2014)
+    \item Split data into training (2000-09) and testing sets (2010-14)
+    \item Conducted leave-one-year-out cross validation with each candidate model across the training phase
+    \item Used a forward-backward stepwise algorithm to select a model that minimized the cross-validated mean absolute error (CV MAE)
+    \item The model with the lowest CV MAE and the model with the fewest covariates within 1 SD of that model were selected to make forecasts for the testing phase
+    \item Final models judged on testing phase performance
 \end{itemize}
 
 \end{frame}
