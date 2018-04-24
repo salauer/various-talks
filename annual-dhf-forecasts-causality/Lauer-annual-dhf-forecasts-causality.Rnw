@@ -1,0 +1,475 @@
+\documentclass{beamer}
+
+\usepackage[english]{babel}
+\usepackage[latin1]{inputenc}
+\usepackage{times}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+%\usepackage{lmodern}
+% Or whatever. Note that the encoding and the font should match. If T1
+% does not look nice, try deleting the line with the fontenc.
+\usepackage{multirow}
+\usepackage{color, colortbl}
+% \usepackage{cite}
+% \usepackage{biblatex}
+\usepackage{hyperref}
+% \usepackage{caption}
+
+% \DeclareMathSizes{16}{20}{14}{10}
+
+\mode<handout>{\setbeamercolor{background canvas}{bg=black!5}}
+\mode<article>{
+\topmargin 0.0cm
+% \oddsidemargin 0.2cm
+%\textwidth 16cm
+\textheight 21cm
+\footskip 1.0cm
+
+\renewcommand\floatpagefraction{.9}
+\renewcommand\topfraction{.9}
+\renewcommand\bottomfraction{.9}
+\renewcommand\textfraction{.1}
+}
+
+\mode<presentation>
+{
+\setbeamertemplate{navigation symbols}{}
+\useinnertheme{rectangles}
+\definecolor{UMassRed}{RGB}{150,0,36}
+\definecolor{UMassBlack}{RGB}{51, 51, 51}
+\definecolor{light-gray}{gray}{0.8}
+\definecolor{HopkinsBlue}{RGB}{28,72,130}
+\definecolor{HopkinsOlive}{RGB}{132,122,21}
+
+\setbeamercolor{frametitle}{fg=white, bg=UMassRed}
+\setbeamercolor{section in head/foot}{fg=white, bg=gray}
+
+\setbeamercolor{title}{fg=UMassRed}
+\setbeamertemplate{enumerate items}[default]
+\setbeamercolor{enumerate item}{fg=UMassBlack}
+\setbeamercolor{section number projected}{bg=black}
+\setbeamercolor{section in toc}{fg=UMassRed}
+\setbeamercolor{subsection number projected}{bg=UMassRed}
+\setbeamercolor{itemize item}{fg=UMassBlack}
+\setbeamercolor{itemize subitem}{fg=UMassRed}
+
+\setbeamertemplate{frametitle}
+{
+\begin{beamercolorbox}[wd=\paperwidth, sep=.01cm] {frametitle}
+\begin{minipage}[t]{0.6cm}
+\vspace{0pt}
+\begin{beamercolorbox}[wd=.6cm] {frametitle}
+\end{beamercolorbox}%
+\end{minipage}
+\begin{minipage}[t]{.9\paperwidth}
+\vspace{0pt}
+\begin{beamercolorbox}[wd=.85\paperwidth, sep=.2cm] {}
+{\Large \insertframetitle}
+\par
+{\large \insertframesubtitle}
+% \vskip5pt
+\end{beamercolorbox}
+\end{minipage}
+\end{beamercolorbox}
+}
+
+\setbeamertemplate{footline}
+{\leavevmode
+\begin{beamercolorbox}[ht=2.5ex,dp=1ex, wd=.85\paperwidth]
+{section in head/foot}
+\raggedright{\quad \insertsection \qquad
+\emph{ \insertsubsection}}
+\end{beamercolorbox}%
+\begin{beamercolorbox}[ht=2.5ex, dp=1ex,
+wd=.15\paperwidth]{section in head/foot}
+\raggedleft{\insertframenumber/18 \ }
+
+\end{beamercolorbox}%
+
+}
+
+}
+
+\newenvironment{changemargin}[2]{%
+\begin{list}{}{%
+\setlength{\topsep}{0pt}%
+\setlength{\leftmargin}{#1}%
+\setlength{\rightmargin}{#2}%
+\setlength{\parindent}{0cm}%
+\setlength{\listparindent}{\parindent}%
+\setlength{\itemindent}{\parindent}%
+\setlength{\parsep}{\parskip}%
+}%
+\item[]}{\end{list}}
+
+%Allows the insertion of background images
+\newcommand\BackgroundPicture[1]{%
+\setbeamertemplate{background}{%
+\parbox[c][\paperheight]{\paperwidth}{%
+\includegraphics[height=1\paperheight]{#1}
+\hfill \vfill
+}}}
+
+\setbeamertemplate{navigation symbols}{} %get rid of the navigation symbols
+
+\renewcommand{\arraystretch}{1.5}
+
+\newcommand{\as}{\stackrel{a.s.}{\longrightarrow}}
+
+\DeclareFontShape{OT1}{cmtt}{bx}{n}{
+<5><6><7><8><9><10><10.95><12><14.4><17.28><20.74><24.88>cmttb10}{}
+
+\setbeamertemplate{bibliography entry title}{}
+\setbeamertemplate{bibliography entry location}{}
+\setbeamertemplate{bibliography entry note}{}
+
+\newcommand{\etal}{\textit{et al}.}
+\newcommand{\etalspace}{\textit{et al}. }
+\newcommand{\ie}{\textit{i}.\textit{e}. }
+\newcommand{\eg}{\textit{e}.\textit{g}. }
+
+\title{Annual forecasts of \\ dengue hemorrhagic fever incidence in Thailand}
+\author{Stephen A Lauer}
+\institute{Reich Lab, Department of Biostatistics and Epidemiology,\\ University of Massachusetts, Amherst}
+
+% \titlegraphic{
+% \includegraphics[width=2.5cm]{Umass_logo.png}
+% \hspace*{0.75cm}~
+% \includegraphics[width=2.5cm]{Thai-MoPH-logo.jpg}
+% \hspace*{0.75cm}~
+% \includegraphics[height=2.25cm]{JH-logo.jpg}
+% }
+
+\date{26 April 2018}
+
+\begin{document}
+
+
+\begin{frame}[plain]
+\titlepage
+\only<article>{\maketitle}
+\end{frame}
+
+\begin{frame}{Forecasting projects I've worked on}
+
+\begin{itemize}
+    \item \textbf{Onset of the influenza season}
+    \begin{itemize}
+        \item Used an algorithm to find optimal threshold to signal season onset (Reich \etal, 2014)
+    \end{itemize}
+    \item \textbf{Short-term dengue incidence forecasts}
+    \begin{itemize}
+        \item Validation and evaluation of retrospective forecasts from a spatio-temporal model (Reich \etal, 2016)
+        \item Evaluation of spatio-temporal model in a real-time context (Reich \etal, 2016)
+        \item Kernal conditional density estimation for retrospective forecasts (Ray \etal, 2017)
+    \end{itemize}
+    \item \textbf{Reporting delay modeling}
+    \begin{itemize}
+        \item Expansion factors to update recent, incomplete counts to improve short-term forecasts (Sakrejda \etal, in progress)
+    \end{itemize}
+    \item \textbf{General}
+    \begin{itemize}
+        \item The \texttt{ForecastFramework} package helps researchers build, validate, and evaluate forecasting models
+    \end{itemize}
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}{Lessons learned}
+
+\begin{itemize}
+    \item There is no single best model for all situations (\ie disease, forecast target, spatial or temporal scale)
+    \begin{itemize}
+        \item Simple models can be frustratingly good
+        % \item Ensembles can help find best models for a given situation (not presented here)
+    \end{itemize}
+    \item Overfitting on training data is a huge issue, making forecasts non-generalizable
+    \begin{itemize}
+        \item Can even occur when cross-validating a model
+    \end{itemize}
+    \item Evaluation metrics affect both model building and interpretation of results
+    \begin{itemize}
+        \item And thus should not be taken lightly
+    \end{itemize}
+    \item Forecasting techniques could be applied more broadly
+    \begin{itemize}
+        \item For use in estimation or causal inference
+    \end{itemize}
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}{Background}
+
+\begin{itemize}
+    \item Our group started making short-term DHF forecasts for the Thailand Ministry of Public Health (MOPH) in 2013
+    \item Every April/May, we go to Bangkok to discuss progress
+    \item In 2015, they asked "Is this year going to be big?"
+    \item Our short-term biweekly forecasts were not accurate that far into the future
+\end{itemize}
+\textbf{Goal: in April of each year, make ``annual'' forecasts for the rest of the year, given the data we have through March}
+
+\end{frame}
+
+\begin{frame}{DHF in Thailand}
+
+\begin{figure}
+\centering
+\includegraphics[width=1\linewidth]{figure/dhf-incidence-1}
+\end{figure}
+
+\end{frame}
+
+
+\begin{frame}{DHF spatial distribution}
+
+\includegraphics[width=0.45\paperwidth]{figure/incidence-map-2}
+\includegraphics[width=0.45\paperwidth]{figure/incidence-map-3}
+
+\end{frame}
+
+\begin{frame}{DHF predictors}
+
+There are many potential drivers of annual DHF incidence:
+
+\begin{itemize}
+    \item Prior incidence
+    \item Susceptibility
+    \item Population density
+    \item Relative humidity (min, mean, max)
+    \item Rainfall (max, total)
+    \item Temperature (min, mean, max)
+\end{itemize}
+
+These are aggregated across individual months (Jan, Feb, Mar) and over seasonal time frames, for a total of 34 covariates.
+
+\end{frame}
+
+\begin{frame}{Seasonal time frames}
+
+\includegraphics[width=0.8\paperwidth]{figure/season-timing}
+
+\end{frame}
+
+\section*{Methods}
+
+\begin{frame}{Forecasting model}
+
+We model the incidence, $Y_{it}$, for province $i$ in year $t$ as a generalized additive model of the negative binomial family:
+
+\begin{align*}
+    Y_{i,t} &\sim NB(n_{it}\lambda_{it}, r) \\
+    \log \Big [ \mathbf{E}(Y_{it}) \Big ] &= \log(n_{it}) + \alpha_i + \sum_{j=1}^J g_j(x_{jit}|\boldsymbol{\theta}) \\
+    \alpha_i &\sim Normal(\mu, \sigma^2)
+\end{align*}
+
+\begin{itemize}
+    \item $n_{it}$ is the population, $\lambda_{it}$ is the incidence rate, $r$ is the NB dispersion
+    \item $\alpha_i$ is a random effect for province, $g_j(x_{jit}|\boldsymbol{\theta})$ is a penalized cubic spline for the $j$th covariate
+    % \item this model framework account for non-linear relationships between covariates and outcome and can be sampled from to get probabilistic forecasts
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}{Cross validation for variable selection}
+
+\begin{itemize}
+    \item We conducted leave-one-year-out cross validation with each candidate model across the training phase (2000-2009)
+    \item We used a forward-backward stepwise algorithm to select a model that minimized the cross-validated mean absolute error (CV MAE)
+    \item The model with the lowest CV MAE and the model with the fewest covariates within 1 SD of that model were selected to make forecasts for the testing phase (2010-2014)
+\end{itemize}
+
+\end{frame}
+
+\section*{Results}
+
+\begin{frame}{Testing phase models}
+
+\begin{itemize}
+    \item The weather-incidence-and-population (WIP) model:
+    \begin{itemize}
+        \item Pre-season (January-March) incidence
+        \item Total January rainfall
+        \item Mean January temperature
+        \item Mean low-season (November-March) temperature
+        \item Provincial population
+    \end{itemize}
+    \item The incidence-only model
+    \item Baseline forecasts:
+    \begin{itemize}
+        \item the 10-year provincial median incidence rate
+    \end{itemize}
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}{Evaluation methods}
+
+\begin{itemize}
+    \item Relative MAE (rMAE):
+    $$\frac{\text{MAE}_\text{model}}{\text{MAE}_\text{baseline}}$$
+    \item \% of forecasts better than baseline:
+    $$
+    \frac{1}{P_k}\sum_{i, t \in k} I(\left \vert \log(\widehat{Y}_{model,i,t})-\log(Y_{i,t})\right \vert < \left \vert \log(\widehat{Y}_{baseline,i,t})-\log(Y_{i,t})\right \vert)
+    $$
+    \item 80\% prediction interval coverage
+    \item Outbreak probability
+    \begin{itemize}
+        \item Outbreak: 2 SD above 10-year median incidence rate
+    \end{itemize}
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}{Model performance}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{c|c|p{1.75cm}|p{1.6cm}}
+    \hline
+    Model & rMAE & \% of forecasts better than baseline & 80\% PI coverage \\
+    \hline
+    WIP & 0.87 & 56.3 & 69.7 \\
+    Incidence-only & 0.81 & 64.7 & 80.0 \\
+    Baseline & 1.00 &  &  \\
+    \hline
+\end{tabular}
+\end{table}
+
+\end{frame}
+
+\begin{frame}{Model performance}
+
+\includegraphics[width=5cm]{figure/spatial-rmae-maps-1}
+\includegraphics[width=5cm]{figure/spatial-rmae-maps-2} \hfill{}
+
+\end{frame}
+
+\begin{frame}{Model performance}
+
+\begin{figure}
+\centering
+\includegraphics[width=1\linewidth]{figure/annual-pred-plot-1}
+\end{figure}
+
+\end{frame}
+
+\begin{frame}{Outbreak performance: all test phase}
+
+\begin{figure}
+\centering
+\includegraphics[width=1\linewidth]{figure/outbreak-bins-1}
+\end{figure}
+
+\end{frame}
+
+\begin{frame}{Outbreak performance: all test phase}
+
+\begin{figure}
+\centering
+\includegraphics[width=0.75\linewidth]{figure/roc-plot-1}
+\end{figure}
+
+\end{frame}
+
+\section*{Conclusion}
+
+\begin{frame}{Takeaways}
+
+\begin{itemize}
+    \item A model based on pre-season incidence consistently outperformed a baseline model based on the 10-year median rate on out-of-sample forecasts
+    \item The inclusion of weather covariates did not improve out-of-sample forecasts in the majority of geospatial regions
+    \item This model successfully ordered provinces by outbreak risk, which could be used by public health officials in deciding allocation of resources in the future
+    \item These models did not account for interactions between covariates
+    \item Making these forecasts earlier in the year is a goal for future work
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}{Collaborators}
+
+\centering
+% \includegraphics[height=1cm]{figure/ImpetusLogo}
+
+% \includegraphics[height=1cm]{figure/reich-lab.png} \hspace*{0.5cm}~ \includegraphics[height=0.75cm]{figure/umass-logo}
+\textbf{Reich Lab, UMass Biostats}
+
+Nicholas G Reich, Evan L Ray, and Krzysztof Sakrejda
+
+\vskip5pt
+% \includegraphics[height=1cm]{figure/jhu-idd} \hspace*{1cm}~ \includegraphics[height=1.25cm]{figure/JH-logo}
+\textbf{Infectious Disease Dynamics, Johns Hopkins Bloomberg School of Public Health}
+
+Justin Lessler, Lindsay T Keegan, and Qifang Bi
+
+\vskip5pt
+% \includegraphics[height=1.25cm]{figure/UF-iddynamics}
+\textbf{Infectious Disease Dynamics, University of Florida Emerging Pathogens Institute}
+
+Derek AT Cummings
+
+\vskip5pt
+% \includegraphics[height=1.5cm]{figure/thai-moph-logo}
+\textbf{Bureau of Epidemiology, Department for Disease Control, Ministry of Public Health, Thailand}
+
+Sopon Iamsirithaworn, Paphanij Suangtho, Soawapak Hinjoy, Suthanun Suthachana, and Yongjua Laosiritaworn
+
+\end{frame}
+
+\begin{frame}{WIP splines - training phase}
+
+\begin{figure}
+\centering
+\includegraphics[width=1\linewidth]{figure/wip-covs-training-1}
+\end{figure}
+
+\end{frame}
+
+\begin{frame}{WIP splines - testing phase}
+
+\begin{figure}
+\centering
+\includegraphics[width=1\linewidth]{figure/wip-covs-test-1}
+\end{figure}
+
+\end{frame}
+
+\begin{frame}{Outbreak performance}
+    \centering
+    \includegraphics[height=0.8\paperheight]{figure/outbreak-plot-3}
+\end{frame}
+
+\begin{frame}{Cross validation for variable selection}
+
+\begin{enumerate}
+    \item Start with a null model with only province random effects
+    \item Build a new model for each covariate (34 new models), in the following manner
+    \begin{enumerate}
+        \item If the covariate is not currently in the model, add it
+        \item If the covariate is currently in the model, remove it
+    \end{enumerate}
+    \item Conduct leave-one-season-out cross validation for each new model on the years 2000-2009 and find the cross-validated mean absolute error (CV MAE)
+    \item If a new model has a lower CV MAE than any model from the last iteration, keep the new model and repeat steps 2-3. Otherwise, stop.
+    \item The model with the lowest CV MAE and the model with the fewest covariates within 1 SD of that model are selected to make forecasts for the testing phase (2010-2014)
+\end{enumerate}
+
+\end{frame}
+
+\begin{frame}{Estimated relative susceptibility}
+
+\begin{align*}
+    s_{i,t} &= s_{i,t-1} - \frac{y_{i,t-1}}{n_{i,t-1}} + \frac{y_{i,t-3}}{n_{i,t-3}} \\
+    s_{i,0} &= \frac{1}{10}\sum_{t=2000}^{2009}\frac{y_{i,t}}{n_{i,t}},
+\end{align*}
+
+\begin{itemize}
+    \item $s_{it}$ is the estimated relative susceptibility
+    \item $y_{it}$ is the observed incidence
+    \item $n_{i,t}$ is the population in province $i$ in year $t$
+    \item assume each province starts with estimated relative susceptibility of average incidence rate over the training phase ($s_{i,0}$)
+    \item provinces with larger susceptible populations are more likely to have greater incidence than provinces with smaller susceptible populations
+\end{itemize}
+
+\end{frame}
+
+\end{document}
