@@ -401,9 +401,18 @@ Furthermore, model should be generalizable beyond this data (\ie future years).
     \item The incidence-only model
     \item Baseline forecasts:
     \begin{itemize}
-        \item the 10-year provincial median incidence rate
+        \item 10-year provincial median incidence rate
     \end{itemize}
 \end{itemize}
+
+\end{frame}
+
+\begin{frame}{WIP splines}
+
+\begin{figure}
+\centering
+\includegraphics[width=1\textwidth]{figure/wip-covs-training-1}
+\end{figure}
 
 \end{frame}
 
@@ -411,11 +420,15 @@ Furthermore, model should be generalizable beyond this data (\ie future years).
 
 \begin{itemize}
     \item Relative MAE (rMAE):
-    $$\frac{\text{MAE}_\text{model}}{\text{MAE}_\text{baseline}}$$
+\end{itemize}
+$$\frac{\text{MAE}_\text{model}}{\text{MAE}_\text{baseline}}$$
+\begin{itemize}
     \item \% of forecasts better than baseline:
-    $$
-    \frac{1}{P_k}\sum_{i, t \in k} I(\left \vert \log(\widehat{Y}_{model,i,t})-\log(Y_{i,t})\right \vert < \left \vert \log(\widehat{Y}_{baseline,i,t})-\log(Y_{i,t})\right \vert)
-    $$
+\end{itemize}
+$$
+\frac{1}{P_k}\sum_{i, t \in k} I(\left \vert \log(\widehat{Y}_{model,i,t})-\log(Y_{i,t})\right \vert < \left \vert \log(\widehat{Y}_{baseline,i,t})-\log(Y_{i,t})\right \vert)
+$$
+\begin{itemize}
     \item 80\% prediction interval coverage
     \item Outbreak probability
     \begin{itemize}
@@ -434,12 +447,23 @@ Furthermore, model should be generalizable beyond this data (\ie future years).
     Model & rMAE & \% of forecasts better than baseline & 80\% PI coverage \\
     \hline
     WIP & 0.87 & 56.3 & 69.7 \\
-    Incidence-only & 0.81 & 64.7 & 80.0 \\
+    Incidence-only & \textbf{0.81} & \textbf{64.7} & \textbf{80.0} \\
     Baseline & 1.00 &  &  \\
     \hline
 \end{tabular}
 \end{table}
 
+\centering
+(Simple models can be frustratingly good)
+
+\end{frame}
+
+\begin{frame}{CV assessment}
+
+\centering
+\includegraphics[width=1\textwidth]{figure/mae-by-covariate-and-validation.png}
+
+(Overfitting is an issue, even with cross validation)
 \end{frame}
 
 \begin{frame}{Model performance}
@@ -447,27 +471,12 @@ Furthermore, model should be generalizable beyond this data (\ie future years).
 \includegraphics[width=5cm]{figure/spatial-rmae-maps-1}
 \includegraphics[width=5cm]{figure/spatial-rmae-maps-2} \hfill{}
 
-\end{frame}
-
-\begin{frame}{Model performance}
-
-\begin{figure}
 \centering
-\includegraphics[width=1\linewidth]{figure/annual-pred-plot-1}
-\end{figure}
+(No single model works best in all situations)
 
 \end{frame}
 
-\begin{frame}{Outbreak performance: all test phase}
-
-\begin{figure}
-\centering
-\includegraphics[width=1\linewidth]{figure/outbreak-bins-1}
-\end{figure}
-
-\end{frame}
-
-\begin{frame}{Outbreak performance: all test phase}
+\begin{frame}{Outbreak performance}
 
 \begin{figure}
 \centering
@@ -520,27 +529,21 @@ Sopon Iamsirithaworn, Paphanij Suangtho, Soawapak Hinjoy, Suthanun Suthachana, a
 
 \end{frame}
 
-\begin{frame}{WIP splines - training phase}
+\begin{frame}{Estimated relative susceptibility}
 
-\begin{figure}
-\centering
-\includegraphics[width=1\linewidth]{figure/wip-covs-training-1}
-\end{figure}
+\begin{align*}
+    s_{i,t} &= s_{i,t-1} - \frac{y_{i,t-1}}{n_{i,t-1}} + \frac{y_{i,t-3}}{n_{i,t-3}} \\
+    s_{i,0} &= \frac{1}{10}\sum_{t=2000}^{2009}\frac{y_{i,t}}{n_{i,t}},
+\end{align*}
 
-\end{frame}
+\begin{itemize}
+    \item $s_{it}$ is the estimated relative susceptibility
+    \item $y_{it}$ is the observed incidence
+    \item $n_{i,t}$ is the population in province $i$ in year $t$
+    \item assume each province starts with estimated relative susceptibility of average incidence rate over the training phase ($s_{i,0}$)
+    \item provinces with larger susceptible populations are more likely to have greater incidence than provinces with smaller susceptible populations
+\end{itemize}
 
-\begin{frame}{WIP splines - testing phase}
-
-\begin{figure}
-\centering
-\includegraphics[width=1\linewidth]{figure/wip-covs-test-1}
-\end{figure}
-
-\end{frame}
-
-\begin{frame}{Outbreak performance}
-    \centering
-    \includegraphics[height=0.8\paperheight]{figure/outbreak-plot-3}
 \end{frame}
 
 \begin{frame}{Cross validation for variable selection}
@@ -559,20 +562,35 @@ Sopon Iamsirithaworn, Paphanij Suangtho, Soawapak Hinjoy, Suthanun Suthachana, a
 
 \end{frame}
 
-\begin{frame}{Estimated relative susceptibility}
+\begin{frame}{WIP splines - testing phase}
 
-\begin{align*}
-    s_{i,t} &= s_{i,t-1} - \frac{y_{i,t-1}}{n_{i,t-1}} + \frac{y_{i,t-3}}{n_{i,t-3}} \\
-    s_{i,0} &= \frac{1}{10}\sum_{t=2000}^{2009}\frac{y_{i,t}}{n_{i,t}},
-\end{align*}
+\begin{figure}
+\centering
+\includegraphics[width=1\textwidth]{figure/wip-covs-test-1}
+\end{figure}
 
-\begin{itemize}
-    \item $s_{it}$ is the estimated relative susceptibility
-    \item $y_{it}$ is the observed incidence
-    \item $n_{i,t}$ is the population in province $i$ in year $t$
-    \item assume each province starts with estimated relative susceptibility of average incidence rate over the training phase ($s_{i,0}$)
-    \item provinces with larger susceptible populations are more likely to have greater incidence than provinces with smaller susceptible populations
-\end{itemize}
+\end{frame}
+
+\begin{frame}{Model performance}
+
+\begin{figure}
+\centering
+\includegraphics[width=1\linewidth]{figure/annual-pred-plot-1}
+\end{figure}
+
+\end{frame}
+
+\begin{frame}{Outbreak performance}
+    \centering
+    \includegraphics[height=0.8\paperheight]{figure/outbreak-plot-3}
+\end{frame}
+
+\begin{frame}{Outbreak performance}
+
+\begin{figure}
+\centering
+\includegraphics[width=0.8\textwidth]{figure/outbreak-bins-1}
+\end{figure}
 
 \end{frame}
 
