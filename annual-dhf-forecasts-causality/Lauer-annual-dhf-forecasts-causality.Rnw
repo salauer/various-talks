@@ -499,6 +499,147 @@ $$
 
 \end{frame}
 
+\begin{frame}
+
+\centering
+{\LARGE Back from the future: using forecasts to infer causality}
+
+\end{frame}
+
+\begin{frame}{The sequel}
+
+\begin{itemize}
+    \item We returned to the Thai MOPH in 2017 to deliver annual forecasts and evaluate past predictions
+    \item Forecasts for 2016 were too high in some provinces
+    \item Several provinces had Zika interventions in 2016
+    \item Since Zika and dengue share a vector, reduced dengue incidence (relative to forecasts) may show intervention efficacy
+\end{itemize}
+
+\textbf{Goal: use annual forecasts to estimate the effect of an intervention}
+
+\end{frame}
+
+\begin{frame}{Causal inference and estimands}
+
+\begin{itemize}
+    \item There is a field of study devoted to this: causal inference
+    \item Seek to find the effect of interventions using various estimands
+\end{itemize}
+
+$$ \text{Average treatment effect (ATE)} = \mathbb{E}(Y(1) - Y(0)) $$
+
+\begin{itemize}
+    \item Where $Y(a)$ is the average outcome $Y$ for all units under treatment $a$
+    \item Can't observe both outcomes for each unit, but sometimes estimable, especially in RCTs
+\end{itemize}
+
+$$ \text{Average treatment amongst treated (ATT)} = \mathbb{E}(Y(1) - Y(0)|A=1) $$
+
+\begin{itemize}
+    \item Same as ATE, but only for the units assigned to treatment group $A=1$
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}{Causal estimators}
+
+\begin{align*}
+    \text{Unadjusted Estimator} &= \frac{1}{n_1} \sum_{i \in A_i=1} Y_i - \frac{1}{n_0} \sum_{i \in A_i=0} Y_i \\
+    &= \frac{1}{N} \sum_i^N \left(\frac{\mathbb{I}(A_i=1)Y_i}{\mathbb{P}(A_i=1)} - \frac{\mathbb{I}(A_i=0)Y_i}{\mathbb{P}(A_i=0)} \right)
+\end{align*}
+
+\begin{itemize}
+    \item Difference in means between treatment and control groups
+    \item Unbiased for ATE in RCTs
+\end{itemize}
+
+$$
+IPTW = \frac{1}{N} \sum_i^N \left(\frac{\mathbb{I}(A_i=1)Y_i}{\mathbb{P}(A_i=1|W_i)} - \frac{\mathbb{I}(A_i=0)Y_i}{\mathbb{P}(A_i=0|W_i)} \right)
+$$
+
+\begin{itemize}
+    \item Inverse probability treatment weighting uses propensity score, based on some confounders $W_i$
+    \item Unbiased and more efficient when propensity score consistent
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}{Covariate adjusted residual estimator (CARE)}
+
+\begin{itemize}
+    \item Back to our problem
+    \item Hayes and Moulton came up with an estimator based on the difference in model residuals between treatment and control:
+\end{itemize}
+
+$$
+\text{CARE} = \frac{1}{n_1} \sum_{i \in A_i=1} \left(Y_i - \widehat{Y}_i \right) - \frac{1}{n_0} \sum_{i \in A_i=0} \left(Y_i - \widehat{Y}_i \right)
+$$
+
+\begin{itemize}
+    \item Important to note that $\widehat{Y}$ does not account for intervention $A$
+    \item Concurrently used in ecology, called the ``residual index''
+    \item Garcia-Berthou called it ``\textit{ad hoc} with no statistical justification''
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}{Covariate adjusted residual estimator (CARE)}
+
+We found some statistical justifications!
+
+\begin{itemize}
+    \item By rearranging CARE into:
+\end{itemize}
+
+$$
+\text{CARE} = \frac{1}{N}\sum_{i=1}^N \left(\frac{\mathbb{I}(A_i = 1)}{\mathbb{P}(A = 1)} - \frac{\mathbb{I}(A_i = 0)}{\mathbb{P}(A = 0)} \right) \left(Y_i - \widehat{Y}_i \right)
+$$
+
+\begin{itemize}
+    \item In RCTs, asymptotically unbiased
+    \item When $\widehat{Y}$ consistent for $Y$, increases efficiency
+    \item When $\widehat{Y}$ useless, CARE same as unadjusted estimator
+\end{itemize}
+
+\end{frame}
+
+
+\begin{frame}{CARE--IPW}
+
+By adding inverse probability weighting to CARE, we created our own causal estimator:
+
+$$
+\text{CARE--IPW} = \frac{1}{N}\sum_{i=1}^N \left(\frac{\mathbb{I}(A_i = 1)}{\widehat{\mathbb{P}}(A = 1|W_i)} - \frac{\mathbb{I}(A_i = 0)}{\widehat{\mathbb{P}}(A = 0|W_i)} \right) \left(Y_i - \widehat{Y}_i \right)
+$$
+
+\begin{itemize}
+    \item When $\widehat{\mathbb{P}}(A = 1|W_i)$ consistent for true propensity score, unbiased for ATE, even in observational settings
+    \item When $\widehat{Y}$ controls for confounding between $Y$ and $A$, increases efficiency
+    \item When $\widehat{Y}$ doesn't, CARE--IPW same as IPTW
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}{CARE in forecasting}
+
+\begin{itemize}
+    \item Forecasting situation, where there are several time points of observations with an intervention in the final time point
+    \item Forecasts are fit on previous time points and predict all observations in final time point without a covariate for the intervention
+    \item If $\widehat{Y}$ controls for confounding between $Y$ and $A$, then CARE is unbiased for the ATT
+    \item If propensity score is correct, CARE--IPW is unbiased for the ATE
+    \item If propensity score is incorrect, but $\widehat{Y}$ controls for confounding, CARE--IPW is unbiased for the ATT
+    \item By comparing across estimators, may be able to determine which models are misspecified
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}{Coming to a thesis near you!}
+\begin{itemize}
+    \item Paper with CARE, CARE--IPW proofs, simulations and application to influenza
+    \item Paper on application of CARE and CARE--IPW to the effect of Zika interventions on dengue incidence in Thailand
+\end{itemize}
+\end{frame}
+
 \begin{frame}{Collaborators}
 
 \centering
@@ -507,7 +648,7 @@ $$
 % \includegraphics[height=1cm]{figure/reich-lab.png} \hspace*{0.5cm}~ \includegraphics[height=0.75cm]{figure/umass-logo}
 \textbf{Reich Lab, UMass Biostats}
 
-Nicholas G Reich, Evan L Ray, and Krzysztof Sakrejda
+Nicholas G Reich, Laura B Balzer, Evan L Ray, and Krzysztof Sakrejda
 
 \vskip5pt
 % \includegraphics[height=1cm]{figure/jhu-idd} \hspace*{1cm}~ \includegraphics[height=1.25cm]{figure/JH-logo}
