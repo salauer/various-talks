@@ -82,7 +82,7 @@
 \end{beamercolorbox}%
 \begin{beamercolorbox}[ht=2.5ex, dp=1ex,
 wd=.15\paperwidth]{section in head/foot}
-\raggedleft{\insertframenumber/18 \ }
+\raggedleft{\insertframenumber/33 \ }
 
 \end{beamercolorbox}%
 
@@ -173,6 +173,8 @@ wd=.15\paperwidth]{section in head/foot}
 \end{itemize}
 
 \end{frame}
+
+\section*{Policy relevant forecasts, Lauer}
 
 \begin{frame}{Lessons learned}
 
@@ -350,7 +352,7 @@ These are aggregated across individual months (Jan, Feb, Mar) and over seasonal 
 %
 % \end{frame}
 
-\section*{Methods}
+% \section*{Methods}
 
 \begin{frame}{Forecasting model}
 
@@ -385,7 +387,7 @@ Furthermore, model should be generalizable beyond this data (\ie future years).
 
 \end{frame}
 
-\section*{Results}
+% \section*{Results}
 
 \begin{frame}{Testing phase models}
 
@@ -487,7 +489,7 @@ $$
 
 \end{frame}
 
-\section*{Conclusion}
+% \section*{Conclusion}
 
 \begin{frame}{Takeaways}
 
@@ -567,6 +569,11 @@ $$
     \item Unbiased and more efficient when propensity score consistent
 \end{itemize}
 
+\end{frame}
+
+\begin{frame}{Causal diagram}
+\centering
+\includegraphics[width=1\textwidth]{figure/mechanism-diagram-causal}
 \end{frame}
 
 \begin{frame}{Covariate adjusted residual estimator (CARE)}
