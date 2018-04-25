@@ -563,8 +563,8 @@ IPTW = \frac{1}{N} \sum_i^N \left(\frac{\mathbb{I}(A_i=1)Y_i}{\mathbb{P}(A_i=1|W
 $$
 
 \begin{itemize}
-    \item Inverse probability treatment weighting uses propensity score, based on some confounders $W_i$
-    \item Unbiased and more efficient when propensity score consistent
+    \item Inverse probability treatment weighting uses a propensity score, controlling for confounders, $W$, between $A$ and $Y$
+    \item Unbiased and more efficient if propensity score consistent
 \end{itemize}
 
 \end{frame}
@@ -581,7 +581,7 @@ $$
 $$
 
 \begin{itemize}
-    \item Important to note that $\widehat{Y}$ does not account for intervention $A$
+    \item $\widehat{Y}$ does not account for intervention $A$
     \item Concurrently used in ecology, called the ``residual index''
     \item Garcia-Berthou called it ``\textit{ad hoc} with no statistical justification''
 \end{itemize}
