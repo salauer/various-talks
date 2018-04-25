@@ -128,7 +128,7 @@ wd=.15\paperwidth]{section in head/foot}
 \newcommand{\ie}{\textit{i}.\textit{e}. }
 \newcommand{\eg}{\textit{e}.\textit{g}. }
 
-\title{Annual forecasts of \\ dengue hemorrhagic fever incidence in Thailand}
+\title{Policy-relevant forecasts \\ of \\ infectious disease incidence}
 \author{Stephen A Lauer}
 \institute{Reich Lab, Department of Biostatistics and Epidemiology,\\ University of Massachusetts, Amherst}
 
@@ -468,8 +468,10 @@ $$
 
 \begin{frame}{Model performance}
 
-\includegraphics[width=5cm]{figure/spatial-rmae-maps-1}
-\includegraphics[width=5cm]{figure/spatial-rmae-maps-2} \hfill{}
+\centering
+\includegraphics[height=0.75\paperheight]{figure/rel-mae-maps-moph.png}
+% \includegraphics[width=5cm]{figure/spatial-rmae-maps-1}
+% \includegraphics[width=5cm]{figure/spatial-rmae-maps-2} \hfill{}
 
 \centering
 (No single model works best in all situations)
@@ -490,11 +492,14 @@ $$
 \begin{frame}{Takeaways}
 
 \begin{itemize}
+    \item We make annual forecasts for DHF incidence in Thailand; carefully thought out and executed the modeling, cross validation, and evaluation processes
     \item A model based on pre-season incidence consistently outperformed a baseline model based on the 10-year median rate on out-of-sample forecasts
-    \item The inclusion of weather covariates did not improve out-of-sample forecasts in the majority of geospatial regions
+    \item Inclusion of weather covariates did not improve forecasts in majority of geospatial regions
+    \begin{itemize}
+        \item Model selection may have overfit on features correlated to susceptibility in training phase
+    \end{itemize}
     \item This model successfully ordered provinces by outbreak risk, which could be used by public health officials in deciding allocation of resources in the future
-    \item These models did not account for interactions between covariates
-    \item Making these forecasts earlier in the year is a goal for future work
+    \item Colleagues are working on a mechanistic, annual susceptibility model that could be used in future iterations
 \end{itemize}
 
 \end{frame}
