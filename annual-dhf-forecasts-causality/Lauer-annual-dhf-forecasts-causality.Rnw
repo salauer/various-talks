@@ -82,7 +82,7 @@
 \end{beamercolorbox}%
 \begin{beamercolorbox}[ht=2.5ex, dp=1ex,
 wd=.15\paperwidth]{section in head/foot}
-\raggedleft{\insertframenumber/33 \ }
+\raggedleft{\insertframenumber/36 \ }
 
 \end{beamercolorbox}%
 
@@ -149,64 +149,15 @@ wd=.15\paperwidth]{section in head/foot}
 \only<article>{\maketitle}
 \end{frame}
 
-\begin{frame}{Forecasting projects I've worked on}
-
-\begin{itemize}
-    \item \textbf{Onset of the influenza season}
-    \begin{itemize}
-        \item Used an algorithm to find optimal threshold to signal season onset (Reich \etal, 2014)
-    \end{itemize}
-    \item \textbf{Short-term dengue incidence forecasts}
-    \begin{itemize}
-        \item Validation and evaluation of retrospective forecasts from a spatio-temporal model (Reich \etal, 2016)
-        \item Evaluation of spatio-temporal model in a real-time context (Reich \etal, 2016)
-        \item Kernal conditional density estimation for retrospective forecasts (Ray \etal, 2017)
-    \end{itemize}
-    \item \textbf{Reporting delay modeling}
-    \begin{itemize}
-        \item Expansion factors to update recent, incomplete counts to improve short-term forecasts (Sakrejda \etal, in progress)
-    \end{itemize}
-    \item \textbf{General}
-    \begin{itemize}
-        \item The \texttt{ForecastFramework} package helps researchers build, validate, and evaluate forecasting models
-    \end{itemize}
-\end{itemize}
-
-\end{frame}
-
-\section*{Policy relevant forecasts, Lauer}
-
-\begin{frame}{Lessons learned}
-
-\begin{itemize}
-    \item There is no single best model for all situations (\ie disease, forecast target, spatial or temporal scale)
-    \begin{itemize}
-        \item Simple models can be frustratingly good
-        % \item Ensembles can help find best models for a given situation (not presented here)
-    \end{itemize}
-    \item Overfitting on training data is a huge issue, making forecasts non-generalizable
-    \begin{itemize}
-        \item Can even occur when cross-validating a model
-    \end{itemize}
-    \item Evaluation metrics affect both model building and interpretation of results
-    \begin{itemize}
-        \item And thus should not be taken lightly
-    \end{itemize}
-    \item Forecasting techniques could be applied more broadly
-    \begin{itemize}
-        \item For use in estimation or causal inference
-    \end{itemize}
-\end{itemize}
-
-\end{frame}
-
-\begin{frame}
-
-\centering
-{\LARGE
-Forecasting annual dengue hemorrhagic fever incidence in Thailand}
-
-\end{frame}
+\section*{Policy-relevant forecasts, Lauer}
+%
+% \begin{frame}
+%
+% \centering
+% {\LARGE \textbf {To infinity! (Well, not that far): \\
+% Forecasting annual dengue hemorrhagic fever incidence in Thailand}}
+%
+% \end{frame}
 
 \begin{frame}{Origin story}
 
@@ -220,17 +171,15 @@ Forecasting annual dengue hemorrhagic fever incidence in Thailand}
 
 \end{frame}
 
-\begin{frame}{Choosing a model}
+\begin{frame}{Modeling considerations}
 
 \begin{enumerate}
     \item Rooted in the epidemiology and biology of dengue
-    \item Readily examinable and interpretable
-    \begin{itemize}
-        \item Results more valid and trustable (for us and MOPH)
-        \item Rules out black boxes
-    \end{itemize}
-    \item Flexible in handling non-linear relationships
-    \item Makes accurate forecasts for an actionable outcome
+    \item Easy to examine and interpret
+    \item Flexible in handling complex relationships
+    \item Will continue to work in future beyond current data
+    \item Makes accurate forecasts relative to a baseline model
+    \item Results suggest a course of action
 \end{enumerate}
 
 \end{frame}
@@ -246,8 +195,8 @@ Forecasting annual dengue hemorrhagic fever incidence in Thailand}
 
 \begin{itemize}
 \item Virus spread by \emph{Aedes} mosquitoes, mostly in tropics
-\item $\sim$390 million infections every year, most asymptomatic
-\item Dengue hemorrhagic fever (DHF) may lead to organ failure and death if untreated
+\item $\sim$390 million infections every year, majority asymptomatic %\cite{Bhatt2013}
+\item Dengue hemorrhagic fever (DHF, \emph{aka} ``break bone disease'') is more clinically-relevant and consistently reported over time
 \end{itemize}
 
 \begin{center}
@@ -261,13 +210,15 @@ Forecasting annual dengue hemorrhagic fever incidence in Thailand}
 \begin{frame}{Dengue basics: biology}
 
 \begin{columns}
-\begin{column}{0.5\textwidth}
+\begin{column}{0.6\textwidth}
     \begin{itemize}
         \item Four distinct serotypes (strains)
-        \item First infections are often asymptomatic
-        \item Second infections more likely to result in DHF
-        \item Difficult to determine susceptibility
+        \item Infections may confer immunity to infecting serotype for life, short-term cross-protection to other serotypes
+        \item $1^{\text{st}}$ infections asymptomatic
+        \item $2^{\text{nd}}$ infections more likely DHF
+        \item Near all of 80 compartments unseen
         \item Compartmental model hard to fit, near impossible to forecast from
+        \item Difficult to estimate susceptibility
     \end{itemize}
 \end{column}
 \begin{column}{0.5\textwidth}
@@ -314,13 +265,16 @@ Forecasting annual dengue hemorrhagic fever incidence in Thailand}
 
 \begin{frame}{DHF in Thailand}
 
-\begin{figure}
-\centering
-\includegraphics[width=1\linewidth]{figure/dhf-incidence-1}
-\end{figure}
+\begin{itemize}
+    \item Each province and year has at least one outbreak
+    \item Intermittent country-wide epidemics
+\end{itemize}
+
+\begin{center}
+\includegraphics[width=1\textwidth]{figure/dhf-incidence-2}
+\end{center}
 
 \end{frame}
-
 
 \begin{frame}{DHF spatial distribution}
 
@@ -374,8 +328,8 @@ We model the incidence, $Y_{it}$, for province $i$ in year $t$ as a generalized 
 
 \begin{frame}{Cross validation for variable selection}
 
-Want to use splines for flexibility and interpretability, but have too many covariates to fit a full model.
-Furthermore, model should be generalizable beyond this data (\ie future years).
+Cross validation can help us build a model that performs well beyond the available data.
+Though we need to be wary of overfitting.
 
 \begin{itemize}
     \item Split data into training (2000-09) and testing sets (2010-14)
@@ -401,6 +355,9 @@ Furthermore, model should be generalizable beyond this data (\ie future years).
         \item Provincial population
     \end{itemize}
     \item The incidence-only model
+    \begin{itemize}
+        \item Pre-season incidence
+    \end{itemize}
     \item Baseline forecasts:
     \begin{itemize}
         \item 10-year provincial median incidence rate
@@ -420,21 +377,23 @@ Furthermore, model should be generalizable beyond this data (\ie future years).
 
 \begin{frame}{Evaluation methods}
 
+In the testing phase, we made predictive distributions for each province-season (76 provinces across 5 seasons for 380 province-seasons).
+The median of the distribution was used as a point forecast.
+
 \begin{itemize}
     \item Relative MAE (rMAE):
 \end{itemize}
 $$\frac{\text{MAE}_\text{model}}{\text{MAE}_\text{baseline}}$$
 \begin{itemize}
-    \item \% of forecasts better than baseline:
-\end{itemize}
-$$
-\frac{1}{P_k}\sum_{i, t \in k} I(\left \vert \log(\widehat{Y}_{model,i,t})-\log(Y_{i,t})\right \vert < \left \vert \log(\widehat{Y}_{baseline,i,t})-\log(Y_{i,t})\right \vert)
-$$
-\begin{itemize}
+    \item \% of forecasts better than baseline
+    \begin{itemize}
+        \item By being closer to the observed value
+    \end{itemize}
     \item 80\% prediction interval coverage
     \item Outbreak probability
     \begin{itemize}
         \item Outbreak: 2 SD above 10-year median incidence rate
+        \item Area under the receiver operating curve (AUC)
     \end{itemize}
 \end{itemize}
 
@@ -444,7 +403,7 @@ $$
 
 \begin{table}[H]
 \centering
-\begin{tabular}{c|c|p{1.75cm}|p{1.6cm}}
+\begin{tabular}{c|c|p{1.85cm}|p{1.6cm}}
     \hline
     Model & rMAE & \% of forecasts better than baseline & 80\% PI coverage \\
     \hline
@@ -455,8 +414,8 @@ $$
 \end{tabular}
 \end{table}
 
-\centering
-(Simple models can be frustratingly good)
+% \centering
+% (Simple models can be frustratingly good)
 
 \end{frame}
 
@@ -465,7 +424,7 @@ $$
 \centering
 \includegraphics[width=1\textwidth]{figure/mae-by-covariate-and-validation.png}
 
-(Overfitting is an issue, even with cross validation)
+% (Overfitting is an issue, even with cross validation)
 \end{frame}
 
 \begin{frame}{Model performance}
@@ -475,9 +434,14 @@ $$
 % \includegraphics[width=5cm]{figure/spatial-rmae-maps-1}
 % \includegraphics[width=5cm]{figure/spatial-rmae-maps-2} \hfill{}
 
-\centering
-(No single model works best in all situations)
+% \centering
+% (No single model works best in all situations)
 
+\end{frame}
+
+\begin{frame}{Outbreak performance}
+    \centering
+    \includegraphics[height=0.8\paperheight]{figure/outbreak-plot-3}
 \end{frame}
 
 \begin{frame}{Outbreak performance}
@@ -491,25 +455,52 @@ $$
 
 % \section*{Conclusion}
 
-\begin{frame}{Takeaways}
+\begin{frame}{Lessons learned}
 
 \begin{itemize}
-    \item We make annual forecasts for DHF incidence in Thailand; carefully thought out and executed the modeling, cross validation, and evaluation processes
-    \item A model based on pre-season incidence consistently outperformed a baseline model based on the 10-year median rate on out-of-sample forecasts
-    \item Inclusion of weather covariates did not improve forecasts in majority of geospatial regions
+    \item<1-> Sometimes the simple model is the best model, though there is no single best model for all situations
     \begin{itemize}
-        \item Model selection may have overfit on features correlated to susceptibility in training phase
+        \item<2-> Pre-season incidence model performed best on out-of-sample forecasts; successfully ordered provinces by outbreak risk
+        \item<2-> Model with weather covariates performed better in the north
+        % \item Ensembles can help find best models for a given situation (not presented here)
     \end{itemize}
-    \item This model successfully ordered provinces by outbreak risk, which could be used by public health officials in deciding allocation of resources in the future
-    \item Colleagues are working on a mechanistic, annual susceptibility model that could be used in future iterations
+    \item<3-> Overfitting on training data is a huge issue and can occur when using cross validation
+    \begin{itemize}
+        \item<4-> Model selection may have overfit on features correlated to susceptibility in training phase
+        \item<4-> Colleagues are working on a mechanistic annual susceptibility model that could be used in future iterations
+    \end{itemize}
+    \item<5-> Evaluation metrics affect both model building and interpretation of results
+    \begin{itemize}
+        \item<5-> And thus should not be taken lightly
+    \end{itemize}
+    \item<6-> Forecasting techniques could be applied more broadly
+    \begin{itemize}
+        \item<6-> For use in estimation or causal inference
+        \item<7-> See next section!
+    \end{itemize}
 \end{itemize}
 
 \end{frame}
+%
+% \begin{frame}{Takeaways}
+%
+% \begin{itemize}
+%     \item We make annual forecasts for DHF incidence in Thailand; carefully thought out and executed the modeling, cross validation, and evaluation processes
+%     \item A model based on pre-season incidence consistently outperformed a baseline model based on the 10-year median rate on out-of-sample forecasts
+%     \item Inclusion of weather covariates did not improve forecasts in majority of geospatial regions
+%     \begin{itemize}
+%         \item Model selection may have overfit on features correlated to susceptibility in training phase
+%     \end{itemize}
+%     \item This model successfully ordered provinces by outbreak risk, which could be used by public health officials in deciding allocation of resources in the future
+%     \item Colleagues are working on a mechanistic, annual susceptibility model that could be used in future iterations
+% \end{itemize}
+%
+% \end{frame}
 
 \begin{frame}
 
 \centering
-{\LARGE Back from the future: using forecasts to infer causality}
+{\LARGE \textbf {Back from the future: \\ Using forecasts to infer causality}}
 
 \end{frame}
 
@@ -526,108 +517,142 @@ $$
 
 \end{frame}
 
-\begin{frame}{Causal inference and estimands}
+\begin{frame}{What is the effect of an intervention?}
+
+\pause
 
 \begin{itemize}
-    \item There is a field of study devoted to this: causal inference
-    \item Seek to find the effect of interventions using various estimands
-\end{itemize}
-
-$$ \text{Average treatment effect (ATE)} = \mathbb{E}(Y(1) - Y(0)) $$
-
+\item<2-> The difference between a unit (\eg person, province) receiving intervention and the \emph{same unit} not receiving intervention
 \begin{itemize}
-    \item Where $Y(a)$ is the average outcome $Y$ for all units under treatment $a$
-    \item Can't observe both outcomes for each unit, but sometimes estimable, especially in RCTs
+    \item<3-> Unobservable; can't be a control and treatment too
+    \item<4-> We'll denote this idea: $Y_i(1)-Y_i(0)$
 \end{itemize}
-
-$$ \text{Average treatment amongst treated (ATT)} = \mathbb{E}(Y(1) - Y(0)|A=1) $$
-
+\item<5-> This is why RCTs are the gold standard
 \begin{itemize}
-    \item Same as ATE, but only for the units assigned to treatment group $A=1$
-\end{itemize}
-
-\end{frame}
-
-\begin{frame}{Causal estimators}
-
+    \item<6-> With a large enough sample of two similar groups, we can estimate the average treatment effect by taking the difference in the average between the groups:
 \begin{align*}
-    \text{Unadjusted Estimator} &= \frac{1}{n_1} \sum_{i \in A_i=1} Y_i - \frac{1}{n_0} \sum_{i \in A_i=0} Y_i \\
-    &= \frac{1}{N} \sum_i^N \left(\frac{\mathbb{I}(A_i=1)Y_i}{\mathbb{P}(A_i=1)} - \frac{\mathbb{I}(A_i=0)Y_i}{\mathbb{P}(A_i=0)} \right)
+    \text{Average treatment effect} &= E(Y(1)-Y(0)) \\
+    &= E(Y|A=1) - E(Y|A=0)
 \end{align*}
-
-\begin{itemize}
-    \item Difference in means between treatment and control groups
-    \item Unbiased for ATE in RCTs
+    \item<7-> This simple difference in averages is called the ``unadjusted estimator''
 \end{itemize}
-
-$$
-IPTW = \frac{1}{N} \sum_i^N \left(\frac{\mathbb{I}(A_i=1)Y_i}{\mathbb{P}(A_i=1|W_i)} - \frac{\mathbb{I}(A_i=0)Y_i}{\mathbb{P}(A_i=0|W_i)} \right)
-$$
-
-\begin{itemize}
-    \item Inverse probability treatment weighting uses a propensity score, controlling for confounders, $W$, between $A$ and $Y$
-    \item Unbiased and more efficient if propensity score consistent
 \end{itemize}
 
 \end{frame}
 
-\begin{frame}{Causal diagram}
+\begin{frame}{Diagram of an RCT}
+
 \centering
-\includegraphics[width=1\textwidth]{figure/mechanism-diagram-causal}
+\includegraphics[width=1\textwidth]{figure/dag-intervention-rct}
+
 \end{frame}
+
+\begin{frame}{But we don't have an RCT...}
+
+\pause
+
+\begin{itemize}
+    \item<2-> We often give treatment to people who need it, instead of randomly giving treatment to some who need it and some who don't
+    \item<2-> In these circumstances, it's easy to imagine that people receiving treatment may have more incidence than people not receiving treatment
+    \item<3-> This means that the unadjusted estimator will be biased
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}{Observational diagram}
+
+\centering
+\includegraphics[width=1\textwidth]{figure/dag-intervention-obs}
+
+\end{frame}
+
+\begin{frame}{What can we do about confounding?}
+
+\pause
+
+\begin{itemize}
+    \item<2-> Inverse probability treatment weighting (IPTW)
+    \begin{itemize}
+        \item<2-> Instead of weighting all observations equally, we weight them by their probability of assignment to treatment or control:
+        $$
+        \text{IPTW} = \sum_{i \in A=1} \left(\frac{Y_i}{\widehat{\mathbb{P}}(A_i=1|X_i)} \right) - \sum_{i \in A=0} \left(\frac{Y_i}{\widehat{\mathbb{P}}(A_i=0|X_i)} \right)
+        $$
+        \item<2-> If $\widehat{\mathbb{P}}(A_i=1|X_i)$ is correct, unbiased for average treatment effect; $X_i$ only needs to account for confounding
+    \end{itemize}
+    \item<3-> Intuitively, we should be able to make a model for $Y$ that controls for confounding to find the effect of an intervention
+    \begin{itemize}
+    \item<4->
+    $$
+    \frac{1}{n_1}\sum_{i \in A=1} (Y_i-\widehat{Y}_i) - \frac{1}{n_0}\sum_{i \in A=0} (Y_i-\widehat{Y}_i)
+    $$
+    \item<4-> If there is a difference in the average residuals between treatment and control, it should suggest that the intervention had an effect
+    \end{itemize}
+\end{itemize}
+
+\end{frame}
+
+%
+% \begin{frame}
+%
+% $$ \text{Average treatment effect (ATE)} = \mathbb{E}(Y(1) - Y(0)) $$
+%
+% \begin{itemize}
+%     \item Where $Y(a)$ is the average outcome $Y$ for all units under treatment $a$
+%     \item Can't observe both outcomes for each unit, but sometimes estimable, especially in RCTs
+% \end{itemize}
+%
+% $$ \text{Average treatment amongst treated (ATT)} = \mathbb{E}(Y(1) - Y(0)|A=1) $$
+%
+% \begin{itemize}
+%     \item Same as ATE, but only for the units assigned to treatment group $A=1$
+% \end{itemize}
+%
+% \end{frame}
+%
+
+
 
 \begin{frame}{Covariate adjusted residual estimator (CARE)}
 
 \begin{itemize}
-    \item Back to our problem
-    \item Hayes and Moulton came up with an estimator based on the difference in model residuals between treatment and control:
-\end{itemize}
-
-$$
-\text{CARE} = \frac{1}{n_1} \sum_{i \in A_i=1} \left(Y_i - \widehat{Y}_i \right) - \frac{1}{n_0} \sum_{i \in A_i=0} \left(Y_i - \widehat{Y}_i \right)
-$$
-
-\begin{itemize}
-    \item $\widehat{Y}$ does not account for intervention $A$
+    \item Turns out others have thought of this before
+    \item Hayes and Moulton called this estimator ``covariate-adjusted residuals'' for use in RCTs at a single point in time (presented without proof)
+    \begin{itemize}
+        \item $\widehat{Y}$ accounted for confounders, but not for $A$
+    \end{itemize}
     \item Concurrently used in ecology, called the ``residual index''
     \item Garcia-Berthou called it ``\textit{ad hoc} with no statistical justification''
 \end{itemize}
 
 \end{frame}
 
+
 \begin{frame}{Covariate adjusted residual estimator (CARE)}
 
-We found some statistical justifications!
+We found some statistical justifications! (Math is in the extra slides)
 
 \begin{itemize}
-    \item By rearranging CARE into:
-\end{itemize}
-
-$$
-\text{CARE} = \frac{1}{N}\sum_{i=1}^N \left(\frac{\mathbb{I}(A_i = 1)}{\mathbb{P}(A = 1)} - \frac{\mathbb{I}(A_i = 0)}{\mathbb{P}(A = 0)} \right) \left(Y_i - \widehat{Y}_i \right)
-$$
-
-\begin{itemize}
-    \item In RCTs, asymptotically unbiased
-    \item When $\widehat{Y}$ consistent for $Y$, increases efficiency
-    \item When $\widehat{Y}$ useless, CARE same as unadjusted estimator
+    \item<2-> In RCTs, CARE is asymptotically unbiased for average treatment effect
+    \item<2-> When $\widehat{Y}$ is consistent for $Y$, increases efficiency
+    \item<2-> When $\widehat{Y}$ is useless, CARE is same as unadjusted estimator
+    \item<3-> Still biased in observational settings though...
 \end{itemize}
 
 \end{frame}
-
 
 \begin{frame}{CARE--IPW}
 
 By adding inverse probability weighting to CARE, we created our own causal estimator:
 
 $$
-\text{CARE--IPW} = \frac{1}{N}\sum_{i=1}^N \left(\frac{\mathbb{I}(A_i = 1)}{\widehat{\mathbb{P}}(A = 1|W_i)} - \frac{\mathbb{I}(A_i = 0)}{\widehat{\mathbb{P}}(A = 0|W_i)} \right) \left(Y_i - \widehat{Y}_i \right)
+\text{CARE--IPW} = \sum_{i \in A_i=1} \left(\frac{Y_i - \widehat{Y}_i}{\widehat{\mathbb{P}}(A_i = 1|X_i)} \right) - \sum_{i \in A_i=0} \left(\frac{Y_i - \widehat{Y}_i}{\widehat{\mathbb{P}}(A_i = 0|X_i)} \right)
 $$
 
 \begin{itemize}
-    \item When $\widehat{\mathbb{P}}(A = 1|W_i)$ consistent for true propensity score, unbiased for ATE, even in observational settings
-    \item When $\widehat{Y}$ controls for confounding between $Y$ and $A$, increases efficiency
-    \item When $\widehat{Y}$ doesn't, CARE--IPW same as IPTW
+    \item<2-> When $\widehat{\mathbb{P}}(A_i = a|X_i)$ controls for confounding between $Y$ and $A$, CARE--IPW is unbiased for average treatment effect
+    \item<3-> When $\widehat{Y}$ controls for confounding between $Y$ and $A$, increases efficiency
+    \item<3-> When $\widehat{Y}$ doesn't, CARE--IPW same as IPTW
+    \item<4-> $\widehat{Y}$ doesn't have to include $A$ or be consistent for $Y$!
 \end{itemize}
 
 \end{frame}
@@ -635,15 +660,25 @@ $$
 \begin{frame}{CARE in forecasting}
 
 \begin{itemize}
-    \item Forecasting situation, where there are several time points of observations with an intervention in the final time point
-    \item Forecasts are fit on previous time points and predict all observations in final time point without a covariate for the intervention
-    \item If $\widehat{Y}$ controls for confounding between $Y$ and $A$, then CARE is unbiased for the ATT
-    \item If propensity score is correct, CARE--IPW is unbiased for the ATE
-    \item If propensity score is incorrect, but $\widehat{Y}$ controls for confounding, CARE--IPW is unbiased for the ATT
-    \item By comparing across estimators, may be able to determine which models are misspecified
+    \item<1-> Forecasting situation, where there are several time points of observations with an intervention in the final time point
+    \item<1-> Model is fit on previous time points and forecasts all observations in final time point without a covariate for the intervention
+    \item<2-> If $\widehat{Y}$ controls for confounding between $Y$ and $A$, then CARE unbiased for average treatment amongst the treated (ATT)
+    \item<2-> If propensity score is correct, CARE--IPW is unbiased for the average treatment effect
+    \item<2-> If propensity score is incorrect, but $\widehat{Y}$ controls for confounding, CARE--IPW is unbiased for the ATT
+    \item<3-> Allows us to use more data (from past seasons) to estimate $\widehat{Y}$
+    \item<3-> By comparing across estimators, we may be able to determine which models are misspecified
+    \item<4-> And perhaps best of all...
 \end{itemize}
 
 \end{frame}
+
+\begin{frame}{Causal diagram for thailand}
+\centering
+\includegraphics[width=1\textwidth]{figure/dag-intervention-zika}
+
+If dengue susceptibility unrelated to Zika incidence, we don't need to account for it!
+\end{frame}
+
 
 \begin{frame}{Coming to a thesis near you!}
 \begin{itemize}
@@ -679,6 +714,20 @@ Derek AT Cummings
 \textbf{Bureau of Epidemiology, Department for Disease Control, Ministry of Public Health, Thailand}
 
 Sopon Iamsirithaworn, Paphanij Suangtho, Soawapak Hinjoy, Suthanun Suthachana, and Yongjua Laosiritaworn
+
+\end{frame}
+
+
+\begin{frame}{Acknowledgements}
+This project was funded by NIH NIAID grant 1R01AI102939 and NIGMS R35GM119582.
+The findings and conclusions in this manuscript are those of the authors and do not necessarily represent the views of the National Institutes of Health or the National Institute of General Medical Sciences.
+The funders had no role in study design, data collection and analysis, decision to present, or preparation of the presentation.
+\end{frame}
+
+\begin{frame}
+
+\centering
+\textbf{\LARGE Thank you for your \\ time and attention!}
 
 \end{frame}
 
@@ -734,16 +783,96 @@ Sopon Iamsirithaworn, Paphanij Suangtho, Soawapak Hinjoy, Suthanun Suthachana, a
 \end{frame}
 
 \begin{frame}{Outbreak performance}
-    \centering
-    \includegraphics[height=0.8\paperheight]{figure/outbreak-plot-3}
-\end{frame}
-
-\begin{frame}{Outbreak performance}
 
 \begin{figure}
 \centering
 \includegraphics[width=0.8\textwidth]{figure/outbreak-bins-1}
 \end{figure}
+
+\end{frame}
+
+
+\begin{frame}{Forecasting projects I've worked on}
+
+\begin{itemize}
+    \item \textbf{Onset of the influenza season}
+    \begin{itemize}
+        \item Used an algorithm to find optimal threshold to signal season onset (Reich \etal, 2014)
+    \end{itemize}
+    \item \textbf{Short-term dengue incidence forecasts}
+    \begin{itemize}
+        \item Validation and evaluation of retrospective forecasts from a spatio-temporal model (Reich \etal, 2016)
+        \item Evaluation of spatio-temporal model in a real-time context (Reich \etal, 2016)
+        \item Kernal conditional density estimation for retrospective forecasts (Ray \etal, 2017)
+    \end{itemize}
+    \item \textbf{Reporting delay modeling}
+    \begin{itemize}
+        \item Expansion factors to update recent, incomplete counts to improve short-term forecasts (Sakrejda \etal, in progress)
+    \end{itemize}
+    \item \textbf{General}
+    \begin{itemize}
+        \item The \texttt{ForecastFramework} package helps researchers build, validate, and evaluate forecasting models
+    \end{itemize}
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}{Causal estimators}
+
+\begin{align*}
+    \text{Unadjusted Estimator} &= \frac{1}{n_1} \sum_{i \in A_i=1} Y_i - \frac{1}{n_0} \sum_{i \in A_i=0} Y_i \\
+    &= \frac{1}{N} \sum_i^N \left(\frac{\mathbb{I}(A_i=1)}{\mathbb{P}(A_i=1)} - \frac{\mathbb{I}(A_i=0)}{\mathbb{P}(A_i=0)} \right) Y_i
+\end{align*}
+
+\begin{itemize}
+    \item Difference in means between treatment and control groups
+    \item Unbiased for ATE in RCTs
+\end{itemize}
+
+$$
+IPTW = \frac{1}{N} \sum_i^N \left(\frac{\mathbb{I}(A_i=1)}{\mathbb{P}(A_i=1|W_i)} - \frac{\mathbb{I}(A_i=0)}{\mathbb{P}(A_i=0|W_i)} \right) Y_i
+$$
+
+\begin{itemize}
+    \item Inverse probability treatment weighting uses a propensity score, controlling for confounders, $W$, between $A$ and $Y$
+    \item Unbiased and more efficient if propensity score consistent
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}{Covariate adjusted residual estimator (CARE)}
+
+We found some statistical justifications!
+
+\begin{itemize}
+    \item By rearranging CARE into:
+\end{itemize}
+
+$$
+\text{CARE} = \frac{1}{N}\sum_{i=1}^N \left(\frac{\mathbb{I}(A_i = 1)}{\mathbb{P}(A = 1)} - \frac{\mathbb{I}(A_i = 0)}{\mathbb{P}(A = 0)} \right) \left(Y_i - \widehat{Y}_i \right)
+$$
+
+\begin{itemize}
+    \item In RCTs, asymptotically unbiased
+    \item When $\widehat{Y}$ consistent for $Y$, increases efficiency
+    \item When $\widehat{Y}$ useless, CARE same as unadjusted estimator
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}{CARE--IPW}
+
+By adding inverse probability weighting to CARE, we created our own causal estimator:
+
+$$
+\text{CARE--IPW} = \frac{1}{N}\sum_{i=1}^N \left(\frac{\mathbb{I}(A_i = 1)}{\widehat{\mathbb{P}}(A_i = 1|W_i)} - \frac{\mathbb{I}(A_i = 0)}{\widehat{\mathbb{P}}(A_i = 0|W_i)} \right) \left(Y_i - \widehat{Y}_i \right)
+$$
+
+\begin{itemize}
+    \item When $\widehat{\mathbb{P}}(A_i = 1|W_i)$ consistent for true propensity score, unbiased for ATE, even in observational settings
+    \item When $\widehat{Y}$ controls for confounding between $Y$ and $A$, increases efficiency
+    \item When $\widehat{Y}$ doesn't, CARE--IPW same as IPTW
+\end{itemize}
 
 \end{frame}
 
